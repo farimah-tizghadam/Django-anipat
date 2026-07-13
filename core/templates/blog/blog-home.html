@@ -26,6 +26,8 @@
 
                             <div class="blog_details">
                                 <a class="d-inline-block" href="{% url 'blog:post-detail' post.pk %}">
+                    
+                                    <small>{{post.author.first_name}} {{post.author.last_name}} - {{post.published_date|date:"M d Y"}}</small>
                                     <h2>{{post.title}}</h2>
                                 </a>
                                 <p>{{post.content|truncatewords:20}}</p>

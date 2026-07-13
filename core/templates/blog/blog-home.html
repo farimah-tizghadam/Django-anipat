@@ -59,8 +59,8 @@
                             </div>
 
                             <div class="blog_details">
-                                <a class="d-inline-block" href="single-blog.html">
-                                    <h2>Google inks pact for new 35-storey office</h2>
+                                <a class="d-inline-block" href="{% url 'blog:post-detail' post.pk %}">
+                                    <h2>{{post.title}}</h2>
                                 </a>
                                 <p>That dominion stars lights dominion divide years for fourth have don't stars is that
                                     he earth it first without heaven in place seed it second morning saying.</p>

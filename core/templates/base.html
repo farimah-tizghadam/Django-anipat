@@ -80,18 +80,9 @@
                                 <nav>
                                     <ul id="navigation">
                                         <li><a  href="{% url 'website:index' %}">home</a></li>
-                                        <li><a href="about.html">about</a></li>
+                                        <li><a href="{% url 'website:about' %}">about</a></li>
                                         <li><a href="{% url 'blog:post-list' %}">blog </a></i>
-                                            
-                                        </li>
-                                        <li><a href="#">pages <i class="ti-angle-down"></i></a>
-                                            <ul class="submenu">
-                                                <li><a href="elements.html">elements</a></li>
-                                                
-                                            </ul>
-                                        </li>
-                                        <li><a href="service.html">services</a></li>
-                                        <li><a href="contact.html">Contact</a></li>
+                                        <li><a href="{% url 'website:contact' %}">Contact</a></li>
                                     </ul>
                                 </nav>
                             </div>

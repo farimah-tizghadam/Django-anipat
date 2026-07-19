@@ -1,10 +1,14 @@
 from rest_framework import serializers
 from ...models import Post
+from accounts.models import Profile
+from taggit.serializers import (TagListSerializerField, TaggitSerializer)
 
 
-class PostSerializer(serializers.ModelSerializer):
+class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
+    
+    tags = TagListSerializerField()
    
-   class Meta:
+    class Meta:
         model = Post
         fields = [
             "id",
@@ -14,10 +18,17 @@ class PostSerializer(serializers.ModelSerializer):
             "image",
             "category",
             "status",
+            "create_date",
             "published_date",
+            "views",
+            "tags",
         ]
-        read_only_fields = ["author", "create_date"]
+        read_only_fields = ["author", "create_date", "views"]
 
+
+
+    def get_tags(self, obj):
+        return obj.tags.names()
 
 
         

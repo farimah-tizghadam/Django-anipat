@@ -40,10 +40,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "taggit",
     "accounts",
     "blog",
     "website",
     "rest_framework",
+    "django.contrib.humanize",
 ]
 
 MIDDLEWARE = [
@@ -138,3 +140,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # user manager config
 AUTH_USER_MODEL = "accounts.User"
+
+TAGGIT_CASE_INSENSITIVE = True

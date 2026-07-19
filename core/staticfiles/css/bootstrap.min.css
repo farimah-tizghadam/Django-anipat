@@ -515,6 +515,12 @@ mark {
     height: auto
 }
 
+.thumbnail {
+    width: 60px;
+    height: 60px;
+}
+
+
 .img-thumbnail {
     padding: .25rem;
     background-color: #fff;
@@ -9201,6 +9207,12 @@ a.text-dark:hover {
 
 .invisible {
     visibility: hidden!important
+}
+
+.popular-post-image {
+    width: 80px;
+    height: 80px;
+    max-width: 100%;
 }
 
 @media print {

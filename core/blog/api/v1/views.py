@@ -47,3 +47,10 @@ class PostRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     queryset = Post.objects.filter(status=True)
+
+    def retrieve(self, request, *args, **kwargs):
+        post = self.get_object()
+        post.increment_views()
+        
+        serializer = self.get_serializer(post)
+        return Response(serializer.data)

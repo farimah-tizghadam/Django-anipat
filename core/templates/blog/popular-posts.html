@@ -1,0 +1,22 @@
+{% load static %}
+
+{% load humanize %}
+
+<aside class="single_sidebar_widget popular_post_widget">
+    <h3 class="widget_title">Recent Post</h3>
+    {% for popular_post in popular_posts %}
+    <div class="media post_item">
+        {% if popular_post.image %}
+        <img class="popular-post-image" src="{{ popular_post.image.url }}" alt="{{ popular_post.title }}">
+        {% else %}
+        <img src="{% static 'img/default-post.jpg' %}" alt="Default post image">
+        {% endif %} 
+        <div class="media-body">
+            <a href="{% url 'blog:post-detail' popular_post.pk %}">
+                <h3>{{popular_post.title}}</h3>
+            </a>
+            <p>{{popular_post.published_date|naturalday}}</p>
+        </div>
+    </div>
+    {% endfor %}
+</aside>

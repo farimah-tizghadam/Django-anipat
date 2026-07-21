@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "comment",
     "rest_framework",
     "django.contrib.humanize",
+    "drf_yasg",
 ]
 
 MIDDLEWARE = [

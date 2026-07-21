@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ...models import Post
+from ...models import Post, Category
 from accounts.models import Profile
 from taggit.serializers import (TagListSerializerField, TaggitSerializer)
 
@@ -32,3 +32,8 @@ class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
 
 
         
+class CategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Category
+        fields = ["id", "name"]

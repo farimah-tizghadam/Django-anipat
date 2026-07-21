@@ -1,9 +1,15 @@
+# general modules
 django~=5.2
 python-decouple
 Pillow
-
-django-taggit
-
 djangorestframework
+
+
+# Third party modules
+django-taggit
 markdown       
 django-filter 
+drf-yasg[validation]
+
+
+# deployment module

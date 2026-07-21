@@ -1,5 +1,3 @@
-@ -1,394 +0,0 @@
-
    {% extends 'base.html' %}
 
    {% load static %}
@@ -19,7 +17,7 @@
                      <h2>{{post.title}}</h2>
                      <ul class="blog-info-link mt-3 mb-4">
                         <li><a href="#"><i class="fa fa-user"></i> Travel, Lifestyle</a></li>
-                        <li><a href="#"><i class="fa fa-comments"></i> 03 Comments</a></li>
+                        <li><a href="#"><i class="fa fa-comments"></i> {{comments|length}} Comments</a></li>
                         <li><a href="#"><i class="fa fa-eye"></i>{{post.views}} views</a></li>
                      </ul>
                      <p class="excert">{{post.content}}</p>
@@ -97,7 +95,7 @@
                      <img src="{% static 'img/blog/author.png' %}" alt="">
                      <div class="media-body">
                         <a href="#">
-                           <h4>Harvard milan</h4>
+                           <h4>{{ post.author.first_name }}</h4>
                         </a>
                         <p>Second divided from form fish beast made. Every of seas all gathered use saying you're, he
                            our dominion twon Second divided from</p>
@@ -105,7 +103,8 @@
                   </div>
                </div>
                <div class="comments-area">
-                  <h4>05 Comments</h4>
+                  <h4>{{comments|length}} Comments</h4>
+               {% for comment in comments %}
                   <div class="comment-list">
                      <div class="single-comment justify-content-between d-flex">
                         <div class="user justify-content-between d-flex">
@@ -113,85 +112,34 @@
                               <img src="{% static 'img/comment/comment_1.png' %}" alt="">
                            </div>
                            <div class="desc">
-                              <p class="comment">
-                                 Multiply sea night grass fourth day sea lesser rule open subdue female fill which them
-                                 Blessed, give fill lesser bearing multiply sea night grass fourth day sea lesser
-                              </p>
+                              <p class="comment">{{comment.message}}</p>
                               <div class="d-flex justify-content-between">
                                  <div class="d-flex align-items-center">
                                     <h5>
-                                       <a href="#">Emilly Blunt</a>
+                                       <a href="#">{{comment.name}}</a>
                                     </h5>
-                                    <p class="date">December 4, 2017 at 3:12 pm </p>
+                                    <p class="date">{{comment.creation_date|date:"M d Y"}}</p>
                                  </div>
-                                 <div class="reply-btn">
-                                    <a href="#" class="btn-reply text-uppercase">reply</a>
-                                 </div>
+                                 <!-- <div class="reply-btn">
+                                    <button type="button" class="btn-reply text-uppercase"  onclick="showReplyForm('{{ comment.id }}')">
+                                       Reply
+                                    </button>
+                                 </div> -->
                               </div>
                            </div>
                         </div>
                      </div>
-                  </div>
-                  <div class="comment-list">
-                     <div class="single-comment justify-content-between d-flex">
-                        <div class="user justify-content-between d-flex">
-                           <div class="thumb">
-                              <img src="{% static 'img/comment/comment_2.png' %}" alt="">
-                           </div>
-                           <div class="desc">
-                              <p class="comment">
-                                 Multiply sea night grass fourth day sea lesser rule open subdue female fill which them
-                                 Blessed, give fill lesser bearing multiply sea night grass fourth day sea lesser
-                              </p>
-                              <div class="d-flex justify-content-between">
-                                 <div class="d-flex align-items-center">
-                                    <h5>
-                                       <a href="#">Emilly Blunt</a>
-                                    </h5>
-                                    <p class="date">December 4, 2017 at 3:12 pm </p>
-                                 </div>
-                                 <div class="reply-btn">
-                                    <a href="#" class="btn-reply text-uppercase">reply</a>
-                                 </div>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-                  <div class="comment-list">
-                     <div class="single-comment justify-content-between d-flex">
-                        <div class="user justify-content-between d-flex">
-                           <div class="thumb">
-                              <img src="{% static 'img/comment/comment_3.png' %}" alt="">
-                           </div>
-                           <div class="desc">
-                              <p class="comment">
-                                 Multiply sea night grass fourth day sea lesser rule open subdue female fill which them
-                                 Blessed, give fill lesser bearing multiply sea night grass fourth day sea lesser
-                              </p>
-                              <div class="d-flex justify-content-between">
-                                 <div class="d-flex align-items-center">
-                                    <h5>
-                                       <a href="#">Emilly Blunt</a>
-                                    </h5>
-                                    <p class="date">December 4, 2017 at 3:12 pm </p>
-                                 </div>
-                                 <div class="reply-btn">
-                                    <a href="#" class="btn-reply text-uppercase">reply</a>
-                                 </div>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
+                  </div> 
+                  {% endfor %}
                </div>
                <div class="comment-form">
                   <h4>Leave a Reply</h4>
-                  <form class="form-contact comment_form" action="#" id="commentForm">
+                  <form class="form-contact comment_form" method="post" action="{% url 'comment:comment-create' pk=post.pk %}" id="commentForm">
                      <div class="row">
+                        {% csrf_token %}
                         <div class="col-12">
                            <div class="form-group">
-                              <textarea class="form-control w-100" name="comment" id="comment" cols="30" rows="9"
+                              <textarea class="form-control w-100" name="message" id="comment" cols="30" rows="9"
                                  placeholder="Write Comment"></textarea>
                            </div>
                         </div>
@@ -207,7 +155,7 @@
                         </div>
                         <div class="col-12">
                            <div class="form-group">
-                              <input class="form-control" name="website" id="website" type="text" placeholder="Website">
+                              <input class="form-control" name="subject" id="subject" type="text" placeholder="subject">
                            </div>
                         </div>
                      </div>

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "accounts",
     "blog",
     "website",
+    "comment",
     "rest_framework",
     "django.contrib.humanize",
 ]

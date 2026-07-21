@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .models import Post, Category
+from comment.forms import CommentForm
 from taggit.models import Tag
 from .forms import PostForm
 from django.urls import reverse_lazy
@@ -17,7 +18,9 @@ from django.contrib.auth.mixins import (
     LoginRequiredMixin,
     PermissionRequiredMixin
 )
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.db.models import Prefetch
 
 
 
@@ -94,6 +97,12 @@ class PostDetailView(LoginRequiredMixin, PopularPostsMixin, DetailView):
             .first()
         )
 
+        context["comment_form"] = CommentForm()
+        context["comments"] = self.object.comments.filter(
+            parent__isnull=True,
+            approved=True
+            )
+            
         return context
 
 
@@ -195,3 +204,4 @@ class SearchView(LoginRequiredMixin, PopularPostsMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["query"] = self.request.GET.get("q", "")
         return context
+    

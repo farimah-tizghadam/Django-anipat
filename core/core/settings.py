@@ -47,7 +47,10 @@ INSTALLED_APPS = [
     "comment",
     "rest_framework",
     "django.contrib.humanize",
+    "rest_framework_simplejwt",
+    "django_filters",
     "drf_yasg",
+    "mail_templated",
 ]
 
 MIDDLEWARE = [
@@ -144,3 +147,47 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "accounts.User"
 
 TAGGIT_CASE_INSENSITIVE = True
+
+
+# rest framework settings & permissions
+REST_FRAMEWORK = {
+      "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+    ),
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+}
+
+
+SWAGGER_SETTINGS = {
+    "USE_SESSION_AUTH": True,
+
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            "description": (
+                "Enter your JWT access token like this: "
+                "Bearer <access-token>"
+            ),
+        },
+    },
+}
+
+
+# email configuration
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp4dev"  # SMTP server host
+EMAIL_PORT = 25
+EMAIL_USE_TLS = False  # True for TLS, False for SSL
+EMAIL_HOST_USER = ""  # SMTP server username
+EMAIL_HOST_PASSWORD = ""  # SMTP server password
+EMAIL_USE_SSL = False  # Set to True if using SSL
+DEFAULT_FROM_EMAIL = (
+    "Blog App <noreply@blog.local>"
+)

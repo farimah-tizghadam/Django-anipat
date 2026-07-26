@@ -6,12 +6,9 @@ from blog.models import Post
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.db.models import Prefetch
-from django.contrib.auth.mixins import (
-    LoginRequiredMixin,
-    PermissionRequiredMixin
-)
-# Create your views here.
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
+# Create your views here.
 
 
 class CommentCreateView(LoginRequiredMixin, View):
@@ -26,8 +23,12 @@ class CommentCreateView(LoginRequiredMixin, View):
             comment.author = request.user
 
             comment.save()
-            messages.add_message(request, messages.SUCCESS, "Your message submited successfully ")
+            messages.add_message(
+                request, messages.SUCCESS, "Your message submited successfully "
+            )
         else:
-            messages.add_message(request, messages.ERROR, "Your message didn't submited successfully")
+            messages.add_message(
+                request, messages.ERROR, "Your message didn't submited successfully"
+            )
 
         return redirect("blog:post-detail", pk=post.pk)

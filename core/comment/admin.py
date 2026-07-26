@@ -5,12 +5,10 @@ from .models import Comment
 
 
 class CommentAdmin(admin.ModelAdmin):
-    date_hierarchy = 'creation_date'
-    list_display = ['name','email', 'approved', 'updated_date', 'creation_date']
-    list_filter = ('approved',)
-    search_fields = ['subject', 'message']
-
-
+    date_hierarchy = "creation_date"
+    list_display = ["name", "email", "approved", "updated_date", "creation_date"]
+    list_filter = ("approved",)
+    search_fields = ["subject", "message"]
 
 
 admin.site.register(Comment, CommentAdmin)

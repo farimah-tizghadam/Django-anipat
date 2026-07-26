@@ -5,6 +5,8 @@ app_name = "comment"
 
 urlpatterns = [
     path(
-        "create/<int:pk>/", views.CommentCreateView.as_view(), name="comment-create",
+        "create/<int:pk>/",
+        views.CommentCreateView.as_view(),
+        name="comment-create",
     ),
 ]

@@ -19,8 +19,6 @@ class CustomUserCreationForm(UserCreationForm):
         fields = ["email", "password1", "password2"]
 
 
-
-
 class LoginForm(forms.Form):
     email = forms.EmailField(
         label=_("Email"),
@@ -52,14 +50,10 @@ class LoginForm(forms.Form):
             )
 
             if self.user_cache is None:
-                raise forms.ValidationError(
-                    _("Invalid email or password.")
-                )
+                raise forms.ValidationError(_("Invalid email or password."))
 
             if not self.user_cache.is_active:
-                raise forms.ValidationError(
-                    _("This account is inactive.")
-                )
+                raise forms.ValidationError(_("This account is inactive."))
 
         return cleaned_data
 

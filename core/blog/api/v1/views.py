@@ -13,7 +13,6 @@ from django.shortcuts import get_object_or_404
 from ...models import Post, Category
 from accounts.models import Profile
 
-
 # @api_view(["GET","POST"])
 # def PostList(request):
 #     if request.method == "GET":
@@ -54,7 +53,7 @@ class PostRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     def retrieve(self, request, *args, **kwargs):
         post = self.get_object()
         post.increment_views()
-        
+
         serializer = self.get_serializer(post)
         return Response(serializer.data)
 

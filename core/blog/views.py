@@ -14,25 +14,24 @@ from django.views.generic import (
     DeleteView,
     TemplateView,
 )
-from django.contrib.auth.mixins import (
-    LoginRequiredMixin,
-    PermissionRequiredMixin
-)
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.db.models import Prefetch
 
 
-
 class PopularPostsMixin:
     post_limit = 4
+
     def get_popular_posts(self):
         posts = Post.objects.filter(status=True)
-        posts = posts.order_by("-views", "-published_date")[:self.post_limit]
+        posts = posts.order_by("-views", "-published_date")[: self.post_limit]
         return posts
 
     def get_categories(self):
-        categories = Category.objects.filter(post__status=True).distinct().order_by("name")
+        categories = (
+            Category.objects.filter(post__status=True).distinct().order_by("name")
+        )
         return categories
 
     def get_context_data(self, **kwargs):
@@ -44,19 +43,19 @@ class PopularPostsMixin:
         return context
 
 
-
-class PostListView(PermissionRequiredMixin, LoginRequiredMixin, PopularPostsMixin, ListView):
+class PostListView(
+    PermissionRequiredMixin, LoginRequiredMixin, PopularPostsMixin, ListView
+):
     """
     this is a CBV for getting the posts list.
     """
+
     queryset = Post.objects.filter(status=True)
     template_name = "blog/blog-home.html"
     context_object_name = "posts"
     paginate_by = 3
 
-    permission_required = 'blog.view_post'
-
-
+    permission_required = "blog.view_post"
 
 
 class PostDetailView(LoginRequiredMixin, PopularPostsMixin, DetailView):
@@ -68,12 +67,10 @@ class PostDetailView(LoginRequiredMixin, PopularPostsMixin, DetailView):
     context_object_name = "post"
     template_name = "blog/blog-single.html"
 
-
     def get_object(self, queryset=None):
         post = super().get_object(queryset)
         post.increment_views()
         return post
-
 
     def get_context_data(self, **kwargs):
         # finds the newest post published before the current one or via versa
@@ -81,8 +78,7 @@ class PostDetailView(LoginRequiredMixin, PopularPostsMixin, DetailView):
 
         context["previous_post"] = (
             Post.objects.filter(
-                status=True,
-                published_date__lt=self.object.published_date
+                status=True, published_date__lt=self.object.published_date
             )
             .order_by("-published_date")
             .first()
@@ -90,8 +86,7 @@ class PostDetailView(LoginRequiredMixin, PopularPostsMixin, DetailView):
 
         context["next_post"] = (
             Post.objects.filter(
-                status=True,
-                published_date__gt=self.object.published_date
+                status=True, published_date__gt=self.object.published_date
             )
             .order_by("published_date")
             .first()
@@ -99,10 +94,9 @@ class PostDetailView(LoginRequiredMixin, PopularPostsMixin, DetailView):
 
         context["comment_form"] = CommentForm()
         context["comments"] = self.object.comments.filter(
-            parent__isnull=True,
-            approved=True
-            )
-            
+            parent__isnull=True, approved=True
+        )
+
         return context
 
 
@@ -118,13 +112,13 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
-    
 
 
 class PostEditView(LoginRequiredMixin, UpdateView):
     """
     CBV class for update/edit post
     """
+
     model = Post
     form_class = PostForm
     success_url = reverse_lazy("blog:post-list")
@@ -162,7 +156,7 @@ class PostsByCategoryView(LoginRequiredMixin, PopularPostsMixin, ListView):
     """
     filtering posts by category
     """
-     
+
     template_name = "blog/blog-home.html"
     context_object_name = "posts"
     paginate_by = 4
@@ -178,7 +172,6 @@ class PostsByCategoryView(LoginRequiredMixin, PopularPostsMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["category"] = self.category
         return context
-    
 
 
 class SearchView(LoginRequiredMixin, PopularPostsMixin, ListView):
@@ -192,16 +185,13 @@ class SearchView(LoginRequiredMixin, PopularPostsMixin, ListView):
 
         if not query:
             return Post.objects.filter(status=True)
-        
+
         return Post.objects.filter(
-            Q(title__icontains=query) |
-            Q(content__icontains=query),
+            Q(title__icontains=query) | Q(content__icontains=query),
             status=True,
         )
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["query"] = self.request.GET.get("q", "")
         return context
-    

@@ -24,9 +24,6 @@ from rest_framework.permissions import IsAuthenticated
 from django.urls import reverse
 
 
-
-
-
 class RegistrationAPIView(generics.CreateAPIView):
     serializer_class = RegistrationSerializer
 
@@ -46,9 +43,7 @@ class RegistrationAPIView(generics.CreateAPIView):
             kwargs={"token": token},
         )
 
-        activation_url = self.request.build_absolute_uri(
-            activation_path
-        )
+        activation_url = self.request.build_absolute_uri(activation_path)
         email_obj = EmailMessage(
             "email/activation.tpl",
             {
@@ -67,7 +62,6 @@ class RegistrationAPIView(generics.CreateAPIView):
         return str(refresh.access_token)
 
 
-
 class UserVerificationAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -78,7 +72,7 @@ class UserVerificationAPIView(APIView):
                 "is_verified": request.user.is_verified,
             }
         )
-    
+
 
 class ActivationApiView(APIView):
     """
@@ -108,7 +102,6 @@ class ActivationApiView(APIView):
 
         return Response({"detail": "your account has been activated successfully"})
         # return Response(token)
-
 
 
 class ChangePasswordApiView(generics.GenericAPIView):
@@ -142,7 +135,6 @@ class ChangePasswordApiView(generics.GenericAPIView):
             }
             return Response(response)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 
 
 class ResetPasswordApiView(generics.GenericAPIView):
@@ -179,7 +171,6 @@ class ResetPasswordApiView(generics.GenericAPIView):
         return super().handle_exception(exc)
 
 
-
 class ConfirmResetPasswordApiView(generics.GenericAPIView):
     serializer_class = ResetConfirmSerializer
     permission_classes = [AllowUnauthenticatedUser]
@@ -205,7 +196,6 @@ class ConfirmResetPasswordApiView(generics.GenericAPIView):
         user_obj.save()
 
         return Response({"detail": "your password has been reset successfully"})
-
 
 
 class ActivationResendApiView(generics.GenericAPIView):

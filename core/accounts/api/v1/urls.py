@@ -7,7 +7,6 @@ from rest_framework_simplejwt.views import (
 
 from . import views
 
-
 app_name = "accounts-api-v1"
 
 
@@ -44,7 +43,7 @@ urlpatterns = [
         views.ChangePasswordApiView.as_view(),
         name="change-password",
     ),
-      # reset password
+    # reset password
     path(
         "password-reset/", views.ResetPasswordApiView.as_view(), name="password_reset"
     ),
@@ -65,7 +64,7 @@ urlpatterns = [
         views.ActivationResendApiView.as_view(),
         name="activation-resend",
     ),
-        path(
+    path(
         "profile/",
         views.ProfileAPIView.as_view(),
         name="profile",

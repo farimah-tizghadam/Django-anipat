@@ -23,7 +23,6 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
-
 schema_view = get_schema_view(
     openapi.Info(
         title="Blog API",
@@ -49,7 +48,10 @@ urlpatterns = [
     path("blog/", include("blog.urls")),
     path("comment/", include("comment.urls")),
     path("", include("website.urls")),
-    path("accounts/", include("accounts.urls",  namespace="accounts"), ),
+    path(
+        "accounts/",
+        include("accounts.urls", namespace="accounts"),
+    ),
     path(
         "swagger.<format>/",
         schema_view.without_ui(cache_timeout=0),
@@ -70,5 +72,5 @@ urlpatterns = [
 
 # serving static and media for development
 if settings.DEBUG:
-    urlpatterns += static (settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += static (settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

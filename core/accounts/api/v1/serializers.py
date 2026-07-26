@@ -5,7 +5,6 @@ from django.core import exceptions
 from django.utils.translation import gettext_lazy as _
 
 
-
 class RegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         write_only=True,
@@ -28,11 +27,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if attrs["password"] != attrs["password_confirm"]:
             raise serializers.ValidationError(
-                {
-                    "password_confirm": (
-                        "Passwords do not match."
-                    )
-                }
+                {"password_confirm": ("Passwords do not match.")}
             )
 
         return attrs
@@ -44,7 +39,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
             email=validated_data["email"],
             password=validated_data["password"],
         )
-
 
 
 class ChangePasswordSerializer(serializers.Serializer):
@@ -62,7 +56,6 @@ class ChangePasswordSerializer(serializers.Serializer):
         except exceptions.ValidationError as e:
             raise serializers.ValidationError({"new_password": list(e.messages)})
         return super().validate(attrs)
-    
 
 
 class ResetPasswordSerializer(serializers.Serializer):
@@ -107,7 +100,6 @@ class ActivationResendSerializer(serializers.Serializer):
             )
         attrs["user"] = user_obj
         return super().validate(attrs)
-
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

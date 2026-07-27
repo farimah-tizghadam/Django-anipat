@@ -91,7 +91,8 @@ class ActivationApiView(APIView):
             )
         except InvalidSignatureError:
             return Response(
-                {"detail": "token is invalid"}, status=status.HTTP_400_BAD_REQUEST
+                {"detail": "token is invalid"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         user_obj = User.objects.get(pk=user_id)
@@ -186,7 +187,8 @@ class ConfirmResetPasswordApiView(generics.GenericAPIView):
             )
         except InvalidSignatureError:
             return Response(
-                {"detail": "token is invalid"}, status=status.HTTP_400_BAD_REQUEST
+                {"detail": "token is invalid"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         serializer = self.serializer_class(data=request.data)
@@ -214,7 +216,8 @@ class ActivationResendApiView(generics.GenericAPIView):
         )
         EmailThread(email_obj).start()
         return Response(
-            {"detail": "your activation resend successfully"}, status=status.HTTP_200_OK
+            {"detail": "your activation resend successfully"},
+            status=status.HTTP_200_OK,
         )
 
     def get_token_for_user(self, user):

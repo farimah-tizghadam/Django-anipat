@@ -11,10 +11,11 @@ markdown
 django-filter 
 drf-yasg[validation]
 djangorestframework-simplejwt
-
+django-multi-captcha-admin
 
 # deployment module
 django-mail-templated
 
 # Refactoring and test
 black
+flake8

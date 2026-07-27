@@ -45,7 +45,9 @@ urlpatterns = [
     ),
     # reset password
     path(
-        "password-reset/", views.ResetPasswordApiView.as_view(), name="password_reset"
+        "password-reset/",
+        views.ResetPasswordApiView.as_view(),
+        name="password_reset",
     ),
     path(
         "password-reset/<str:token>",

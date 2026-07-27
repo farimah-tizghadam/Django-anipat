@@ -25,7 +25,10 @@ class Migration(migrations.Migration):
                 ),
                 ("name", models.CharField(max_length=225)),
                 ("email", models.EmailField(max_length=254)),
-                ("subject", models.CharField(blank=True, max_length=225, null=True)),
+                (
+                    "subject",
+                    models.CharField(blank=True, max_length=225, null=True),
+                ),
                 ("message", models.TextField()),
                 ("approved", models.BooleanField(default=False)),
                 ("creation_date", models.DateTimeField(auto_now_add=True)),
@@ -42,7 +45,8 @@ class Migration(migrations.Migration):
                 (
                     "post",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="blog.post"
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="blog.post",
                     ),
                 ),
             ],

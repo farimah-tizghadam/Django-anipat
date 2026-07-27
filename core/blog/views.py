@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from .models import Post, Category
 from comment.forms import CommentForm
 from taggit.models import Tag
@@ -8,16 +7,15 @@ from django.db.models import Q
 from django.views.generic import (
     ListView,
     DetailView,
-    FormView,
     CreateView,
     UpdateView,
     DeleteView,
-    TemplateView,
 )
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib import messages
-from django.db.models import Prefetch
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+)
+from django.shortcuts import get_object_or_404
 
 
 class PopularPostsMixin:

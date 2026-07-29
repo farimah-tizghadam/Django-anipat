@@ -47,6 +47,10 @@ class PostModelViewSet(viewsets.ModelViewSet):
     search_fields = ["title", "content"]
     ordering_fields = ["published_date"]
 
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(author=profile)
+
 
 class CategoryModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]

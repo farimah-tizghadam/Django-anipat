@@ -86,14 +86,11 @@ class TestUserApi:
         assert response.status_code == 200
         assert "token" in response.data
 
-
     def test_login_invalid_400_status_code(self, api_client, common_user):
         url = reverse("accounts:accounts-api-v1:token-login")
         data = {}
         response = api_client.post(url, data)
         assert response.status_code == 400
-
-    
 
     def test_logout_response_204_status_code(self, api_client, common_user):
         """
@@ -116,9 +113,12 @@ class TestUserApi:
         url = reverse("accounts:accounts-api-v1:token-logout")
         response = api_client.post(url)
         assert response.status_code == 401
-    
 
-    def test_refresh_jwt_token_200_status_code(self,api_client,common_user,):
+    def test_refresh_jwt_token_200_status_code(
+        self,
+        api_client,
+        common_user,
+    ):
         login_url = reverse("accounts:accounts-api-v1:jwt-create")
 
         login_response = api_client.post(
@@ -144,8 +144,10 @@ class TestUserApi:
 
         assert response.status_code == 200
 
-
-    def test_refresh_jwt_token_401_status_code(self,api_client,):
+    def test_refresh_jwt_token_401_status_code(
+        self,
+        api_client,
+    ):
         refresh_url = reverse("accounts:accounts-api-v1:token-refresh")
 
         response = api_client.post(
@@ -156,8 +158,10 @@ class TestUserApi:
 
         assert response.status_code == 401
 
-
-    def test_refresh_jwt_token_400_status_code(self,api_client,):
+    def test_refresh_jwt_token_400_status_code(
+        self,
+        api_client,
+    ):
         refresh_url = reverse("accounts:accounts-api-v1:token-refresh")
 
         response = api_client.post(
@@ -168,8 +172,11 @@ class TestUserApi:
 
         assert response.status_code == 400
 
-
-    def test_verify_jwt_token_200_status_code(self,api_client,common_user,):
+    def test_verify_jwt_token_200_status_code(
+        self,
+        api_client,
+        common_user,
+    ):
         login_url = reverse("accounts:accounts-api-v1:jwt-create")
 
         login_response = api_client.post(
@@ -196,8 +203,10 @@ class TestUserApi:
         assert response.status_code == 200
         assert response.data == {}
 
-
-    def test_verify_jwt_token_400_status_code(self,api_client,):
+    def test_verify_jwt_token_400_status_code(
+        self,
+        api_client,
+    ):
         verify_url = reverse("accounts:accounts-api-v1:token-verify")
 
         response = api_client.post(
@@ -208,8 +217,11 @@ class TestUserApi:
 
         assert response.status_code == 400
 
-
-    def test_change_password_success_200_status_code(self,api_client,common_user,):
+    def test_change_password_success_200_status_code(
+        self,
+        api_client,
+        common_user,
+    ):
         url = reverse("accounts:accounts-api-v1:change-password")
 
         api_client.force_authenticate(user=common_user)
@@ -228,12 +240,13 @@ class TestUserApi:
 
         common_user.refresh_from_db()
 
-        assert common_user.check_password(
-            "@/$1234567//"
-        )
+        assert common_user.check_password("@/$1234567//")
 
-
-    def test_change_password_400_status_code(self,api_client,common_user,):
+    def test_change_password_400_status_code(
+        self,
+        api_client,
+        common_user,
+    ):
         url = reverse("accounts:accounts-api-v1:change-password")
 
         api_client.force_authenticate(user=common_user)
@@ -250,8 +263,10 @@ class TestUserApi:
 
         assert response.status_code == 400
 
-
-    def test_change_password_requires_authentication(self,api_client,):
+    def test_change_password_requires_authentication(
+        self,
+        api_client,
+    ):
         url = reverse("accounts:accounts-api-v1:change-password")
 
         response = api_client.put(
@@ -266,11 +281,12 @@ class TestUserApi:
 
         assert response.status_code in (401, 403)
 
-
-    def test_reset_password_200_status_code(self,api_client,common_user,):
-        url = reverse(
-            "accounts:accounts-api-v1:password_reset"
-        )
+    def test_reset_password_200_status_code(
+        self,
+        api_client,
+        common_user,
+    ):
+        url = reverse("accounts:accounts-api-v1:password_reset")
 
         response = api_client.post(
             url,
@@ -280,11 +296,13 @@ class TestUserApi:
 
         assert response.status_code == 200
 
-
-    def test_reset_password_confirm_400_status_code(self,api_client,get_valid_token,):
+    def test_reset_password_confirm_400_status_code(
+        self,
+        api_client,
+        get_valid_token,
+    ):
         url = reverse(
-            "accounts:accounts-api-v1:"
-            "password_reset_confirm",
+            "accounts:accounts-api-v1:" "password_reset_confirm",
             kwargs={
                 "token": get_valid_token,
             },
@@ -298,11 +316,12 @@ class TestUserApi:
 
         assert response.status_code == 400
 
-
-    def test_activation_confirm_200_status_code(self,api_client,another_user,):
-        refresh = RefreshToken.for_user(
-            another_user
-        )
+    def test_activation_confirm_200_status_code(
+        self,
+        api_client,
+        another_user,
+    ):
+        refresh = RefreshToken.for_user(another_user)
         token = str(refresh.access_token)
 
         url = reverse(

@@ -89,7 +89,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         validate_data["user_id"] = self.user.id
 
         return validate_data
-    
+
 
 class ChangePasswordSerializer(serializers.Serializer):
 

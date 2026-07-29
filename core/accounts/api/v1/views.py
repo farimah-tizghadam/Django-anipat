@@ -105,7 +105,6 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
 
-
 class ChangePasswordApiView(generics.GenericAPIView):
     model = User
     permission_classes = [IsAuthenticated]
@@ -205,6 +204,7 @@ class ActivationApiView(APIView):
     """
     Activating email
     """
+
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, token):

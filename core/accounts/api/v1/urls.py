@@ -18,7 +18,6 @@ urlpatterns = [
     ),
     path("token/login/", views.CustomAuthToken.as_view(), name="token-login"),
     path("token/logout/", views.CustomDiscardAuthToken.as_view(), name="token-logout"),
-
     # jwt path
     path("jwt/create/", views.CustomTokenObtainPairView.as_view(), name="jwt-create"),
     path(

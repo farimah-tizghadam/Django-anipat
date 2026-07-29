@@ -48,8 +48,9 @@ INSTALLED_APPS = [
     "website",
     "comment",
     "rest_framework",
-    "django.contrib.humanize",
+    "rest_framework.authtoken",
     "rest_framework_simplejwt",
+    "django.contrib.humanize",
     "django_filters",
     "drf_yasg",
     "mail_templated",
@@ -153,10 +154,13 @@ TAGGIT_CASE_INSENSITIVE = True
 
 # rest framework settings & permissions
 REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+    ),
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
 }

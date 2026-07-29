@@ -1,7 +1,8 @@
 from ...models import User, Profile
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework.authtoken.views import ObtainAuthToken, APIView
+from rest_framework.authtoken.models import Token
 from django.shortcuts import get_object_or_404
 from .serializers import (
     RegistrationSerializer,
@@ -10,12 +11,15 @@ from .serializers import (
     ResetPasswordSerializer,
     ResetConfirmSerializer,
     ActivationResendSerializer,
+    CustomAuthTokenSerializer,
+    CustomTokenObtainPairSerializer,
 )
 
 from mail_templated import EmailMessage
 from ..utils import EmailThread
 from django.conf import settings
 from jwt.exceptions import ExpiredSignatureError, InvalidSignatureError
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 import jwt
 from .permissions import AllowUnauthenticatedUser
@@ -26,6 +30,7 @@ from django.urls import reverse
 
 class RegistrationAPIView(generics.CreateAPIView):
     serializer_class = RegistrationSerializer
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         """
@@ -62,6 +67,28 @@ class RegistrationAPIView(generics.CreateAPIView):
         return str(refresh.access_token)
 
 
+class CustomAuthToken(ObtainAuthToken):
+    serializer_class = CustomAuthTokenSerializer
+
+    def post(self, request, *args, **kwargs):
+
+        serializer = self.serializer_class(
+            data=request.data, context={"request": request}
+        )
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data["user"]
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({"token": token.key, "user_id": user.pk, "email": user.email})
+
+
+class CustomDiscardAuthToken(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        request.user.auth_token.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class UserVerificationAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -74,35 +101,9 @@ class UserVerificationAPIView(APIView):
         )
 
 
-class ActivationApiView(APIView):
-    """
-    Activating email
-    """
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
-    def get(self, request, token):
-        # decode token in order to get user id
-        try:
-            token = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-            user_id = token.get("user_id")
-        except ExpiredSignatureError:
-            return Response(
-                {"details": "token has been expired"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        except InvalidSignatureError:
-            return Response(
-                {"detail": "token is invalid"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        user_obj = User.objects.get(pk=user_id)
-        if user_obj.is_verified:
-            return Response({"detail": "your account has been already verified"})
-        user_obj.is_verified = True
-        user_obj.save()
-
-        return Response({"detail": "your account has been activated successfully"})
-        # return Response(token)
 
 
 class ChangePasswordApiView(generics.GenericAPIView):
@@ -198,6 +199,38 @@ class ConfirmResetPasswordApiView(generics.GenericAPIView):
         user_obj.save()
 
         return Response({"detail": "your password has been reset successfully"})
+
+
+class ActivationApiView(APIView):
+    """
+    Activating email
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, token):
+        # decode token in order to get user id
+        try:
+            token = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+            user_id = token.get("user_id")
+        except ExpiredSignatureError:
+            return Response(
+                {"details": "token has been expired"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except InvalidSignatureError:
+            return Response(
+                {"detail": "token is invalid"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user_obj = User.objects.get(pk=user_id)
+        if user_obj.is_verified:
+            return Response({"detail": "your account has been already verified"})
+        user_obj.is_verified = True
+        user_obj.save()
+
+        return Response({"detail": "your account has been activated successfully"})
+        # return Response(token)
 
 
 class ActivationResendApiView(generics.GenericAPIView):

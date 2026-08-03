@@ -22,7 +22,7 @@ class Command(BaseCommand):
         self.fake = Faker()
 
     def handle(self, *args, **options):
-        user = User.objects.create_user(email=self.fake.email(), password='Test@123456')
+        user = User.objects.create_user(email=self.fake.email(), password="Test@123456")
         profile = Profile.objects.get(user=user)
 
         profile.first_name = self.fake.first_name()
@@ -30,17 +30,15 @@ class Command(BaseCommand):
         profile.description = self.fake.paragraph(nb_sentences=5)
         profile.save()
 
-
         for name in category_list:
             Category.objects.get_or_create(name=name)
-        
+
         for _ in range(10):
             Post.objects.create(
-            author = profile,
-            title = self.fake.word(),
-            content = self.fake.paragraph(nb_sentences=15),
-            category = Category.objects.get(name=random.choice(category_list)),
-            status = random.choice([True, False]),
-            published_date = datetime.now()
-
-        )
+                author=profile,
+                title=self.fake.word(),
+                content=self.fake.paragraph(nb_sentences=15),
+                category=Category.objects.get(name=random.choice(category_list)),
+                status=random.choice([True, False]),
+                published_date=datetime.now(),
+            )

@@ -1,0 +1,42 @@
+<section class="container mt-5">
+
+    <h2>Latest Blog Posts</h2>
+
+    <div id="blog-posts"></div>
+
+</section>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script>
+$(function () {
+
+    $.get("/blog/api/v1/post/", function (response) {
+
+        const posts = response.results || response;
+
+        posts.forEach(function (post) {
+
+            $("#blog-posts").append(`
+                <div style="
+                    border:1px solid #ddd;
+                    padding:20px;
+                    margin-bottom:20px;
+                    border-radius:10px;
+                ">
+
+                    <h3>${post.title}</h3>
+
+                    <p>${post.content}</p>
+
+                    <small>${post.published_date}</small>
+
+                </div>
+            `);
+
+        });
+
+    });
+
+});
+</script>

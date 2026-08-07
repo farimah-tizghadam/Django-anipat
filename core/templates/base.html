@@ -26,6 +26,9 @@
     <link rel="stylesheet" href="{% static 'css/slicknav.css' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <!-- <link rel="stylesheet" href="css/responsive.css"> -->
+
+    {% block extra_css %}{% endblock %}
+
 </head>
 
 <body>
@@ -41,8 +44,25 @@
                         <div class="col-lg-6 col-md-8">
                             <div class="short_contact_list">
                                 <ul>
-                                    <li><a href="#">+880 4664 216</a></li>
-                                    <li><a href="#">Mon - Sat 10:00 - 7:00</a></li>
+                                    
+                                    {% if user.is_authenticated %}
+                                        <li><a href="#">{{ user.email }}</a></li>
+                                         <li>
+                                            <form action="{% url 'accounts:logout' %}"
+                                                method="post"
+                                                style="display:inline;">
+                                                {% csrf_token %}
+                                                <button
+                                                    type="submit"
+                                                    class="logout-link">
+                                                    Logout
+                                                </button>
+                                            </form>
+                                        </li>
+                                    {% else %}
+                                        <li><a href="{% url 'accounts:login' %}">Login</a></li>
+                                        <li><a href="{% url 'accounts:register' %}">Register</a></li>
+                                    {% endif %}
                                 </ul>
                             </div>
                         </div>

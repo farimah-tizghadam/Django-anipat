@@ -54,11 +54,13 @@ INSTALLED_APPS = [
     "django_filters",
     "drf_yasg",
     "mail_templated",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -189,3 +191,11 @@ EMAIL_HOST_USER = ""  # SMTP server username
 EMAIL_HOST_PASSWORD = ""  # SMTP server password
 EMAIL_USE_SSL = False  # Set to True if using SSL
 DEFAULT_FROM_EMAIL = "Blog App <noreply@blog.local>"
+
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+
+LOGIN_REDIRECT_URL = "blog:post-list"
+LOGIN_URL = "accounts:login"
+LOGOUT_REDIRECT_URL = "blog:post-list"

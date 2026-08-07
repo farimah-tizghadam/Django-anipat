@@ -1,20 +1,168 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-</head>
+{% block title %}Login{% endblock %}
 
-<body>
-    <form method="post">
-        {% csrf_token %}
-        <h1>Please sign in</h1>
-        {{form.as_p}}
-        <button type="submit">sign in</button>
+{% block extra_css %}
+<style>
+    .auth-page {
+        min-height: 700px;
+        padding: 85px 15px;
+        background: #f7f7f7;
+    }
 
-    </form>
-</body>
+    .auth-card {
+        width: 100%;
+        max-width: 460px;
+        margin: 0 auto;
+        padding: 42px;
+        background: #ffffff;
+        border-radius: 14px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    }
 
-</html>
+    .auth-card h2 {
+        margin: 0 0 32px;
+        color: #191919;
+        font-size: 34px;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .auth-field {
+        margin-bottom: 22px;
+    }
+
+    .auth-field label {
+        display: block;
+        margin-bottom: 8px;
+        color: #222222;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .auth-field input {
+        display: block;
+        width: 100%;
+        height: 54px;
+        padding: 12px 15px;
+        border: 1px solid #dddddd;
+        border-radius: 7px;
+        box-sizing: border-box;
+        font-size: 16px;
+    }
+
+    .auth-field input:focus {
+        border-color: #ff3500;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(255, 53, 0, 0.15);
+    }
+
+    .remember-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 22px;
+    }
+
+    .auth-button {
+        width: 100%;
+        height: 54px;
+        border: 0;
+        border-radius: 7px;
+        background: #ff3500;
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .auth-button:hover {
+        background: #d92d00;
+    }
+
+    .auth-link {
+        margin-top: 28px;
+        text-align: center;
+        color: #777777;
+    }
+
+    .auth-link a {
+        color: #ff3500;
+        text-decoration: none;
+    }
+
+    .auth-errors {
+        margin-bottom: 22px;
+        padding: 14px 18px;
+        border-radius: 7px;
+        background: #f8d7da;
+        color: #721c24;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+    <div class="auth-card">
+
+        <h2>Please Sign In</h2>
+
+        {% if form.non_field_errors %}
+            <div class="auth-errors">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <form action="{% url 'accounts:login' %}" method="post">
+            {% csrf_token %}
+
+            <div class="auth-field">
+                <label for="id_username">Email address</label>
+
+                <input
+                    type="email"
+                    name="username"
+                    id="id_username"
+                    value="{{ form.username.value|default_if_none:'' }}"
+                    placeholder="name@example.com"
+                    required
+                    autofocus
+                >
+            </div>
+
+            <div class="auth-field">
+                <label for="id_password">Password</label>
+
+                <input
+                    type="password"
+                    name="password"
+                    id="id_password"
+                    placeholder="Enter your password"
+                    required
+                >
+            </div>
+
+            <div class="remember-row">
+                <input
+                    type="checkbox"
+                    name="remember_me"
+                    id="remember_me"
+                >
+                <label for="remember_me">Remember me</label>
+            </div>
+
+            <button type="submit" class="auth-button">
+                Sign In
+            </button>
+        </form>
+
+        <p class="auth-link">
+            Don’t have an account?
+            <a href="{% url 'accounts:register' %}">
+                Create one
+            </a>
+        </p>
+
+    </div>
+</section>
+{% endblock %}

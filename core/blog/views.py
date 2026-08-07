@@ -16,6 +16,7 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin,
 )
 from django.shortcuts import get_object_or_404
+from django.views.generic import TemplateView
 
 
 class PopularPostsMixin:
@@ -55,6 +56,8 @@ class PostListView(
 
     permission_required = "blog.view_post"
 
+class PostListApiView(TemplateView):
+    template_name = "blog/post-list-api.html"
 
 class PostDetailView(LoginRequiredMixin, PopularPostsMixin, DetailView):
     """

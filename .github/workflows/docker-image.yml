@@ -35,6 +35,9 @@ jobs:
       - name: Check migrations
         run: docker compose exec -T backend python manage.py makemigrations --check --dry-run
 
+      - name: Run black
+        run: docker compose exec -T backend black .
+
       - name: Run flake8
         run: docker compose exec -T backend flake8 .
 

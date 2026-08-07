@@ -56,8 +56,10 @@ class PostListView(
 
     permission_required = "blog.view_post"
 
+
 class PostListApiView(TemplateView):
     template_name = "blog/post-list-api.html"
+
 
 class PostDetailView(LoginRequiredMixin, PopularPostsMixin, DetailView):
     """

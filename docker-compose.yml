@@ -1,6 +1,6 @@
-version: '3.9'
 
 services:
+
   backend:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
@@ -12,10 +12,23 @@ services:
       - SECRET_KEY=Test
       - DEBUG=True
 
-
-      
+    
   smtp4dev:
     image: rnwood/smtp4dev:latest
     ports:
       - "5000:80"
       - "2525:25"
+
+  master:
+    image: locustio/locust
+    ports:
+     - "10001:8089"
+    volumes:
+      - ./core/locust:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --master -H http://backend:8000
+  
+  worker:
+    image: locustio/locust
+    volumes:
+      - ./core/locust:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --worker --master-host master

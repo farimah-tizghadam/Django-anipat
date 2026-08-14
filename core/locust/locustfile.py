@@ -20,11 +20,7 @@ class QuickstartUser(HttpUser):
             access_token = response.json().get("access")
 
             if access_token:
-                self.client.headers.update(
-                    {
-                        "Authorization": f"Bearer {access_token}"
-                    }
-                )
+                self.client.headers.update({"Authorization": f"Bearer {access_token}"})
         else:
             print(
                 "Login failed:",

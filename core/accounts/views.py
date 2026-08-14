@@ -3,8 +3,8 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 
 from .forms import CustomUserCreationForm, LoginForm
-from .forms import CustomUserCreationForm, LoginForm
 from .tasks import send_welcome_email
+
 # Create your views here.
 
 

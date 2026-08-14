@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "drf_yasg",
     "mail_templated",
     "corsheaders",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
@@ -199,3 +200,6 @@ CORS_ALLOW_ALL_ORIGINS = True
 LOGIN_REDIRECT_URL = "blog:post-list"
 LOGIN_URL = "accounts:login"
 LOGOUT_REDIRECT_URL = "blog:post-list"
+
+# celery configs
+CELERY_BROKER_URL = "redis://redis:6379/1"

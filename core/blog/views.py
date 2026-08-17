@@ -17,20 +17,34 @@ from django.contrib.auth.mixins import (
 )
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
 
 
 class PopularPostsMixin:
     post_limit = 4
 
     def get_popular_posts(self):
-        posts = Post.objects.filter(status=True)
-        posts = posts.order_by("-views", "-published_date")[: self.post_limit]
+        key = "blog:popular_posts"
+        posts = cache.get(key)
+        if posts is None:
+            posts = Post.objects.filter(status=True)
+            posts = posts.order_by("-views", "-published_date")[: self.post_limit]
+            cache.set(key, posts, timeout=60 * 5)
         return posts
 
+
     def get_categories(self):
-        categories = (
-            Category.objects.filter(post__status=True).distinct().order_by("name")
-        )
+        key = "blog:categories"
+        categories = cache.get(key)
+
+        if categories is None:
+            categories = (
+                Category.objects.filter(post__status=True).distinct().order_by("name")
+            )
+            cache.set(key, categories, timeout=60 * 5)
+
         return categories
 
     def get_context_data(self, **kwargs):
@@ -42,6 +56,9 @@ class PopularPostsMixin:
         return context
 
 
+
+
+@method_decorator(cache_page(60 * 5), name="dispatch")
 class PostListView(
     PermissionRequiredMixin, LoginRequiredMixin, PopularPostsMixin, ListView
 ):

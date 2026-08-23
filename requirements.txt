@@ -12,9 +12,12 @@ django-filter
 drf-yasg[validation]
 djangorestframework-simplejwt
 django-cors-headers
-django-multi-captcha-admin
+psycopg2-binary
 
 # deployment module
+gunicorn
+
+#email third party modules
 django-mail-templated
 
 # Refactoring and test

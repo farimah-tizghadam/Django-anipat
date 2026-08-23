@@ -15,9 +15,7 @@ urlpatterns = [
     ),
     path(
         "logout/",
-        LogoutView.as_view(
-            next_page="blog:post-list",
-        ),
+        views.CustomLogoutView.as_view(),
         name="logout",
     ),
     path(

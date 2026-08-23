@@ -18,7 +18,7 @@ from django.contrib.auth.mixins import (
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
+from django.views.decorators.cache import never_cache
 from django.core.cache import cache
 
 
@@ -57,8 +57,7 @@ class PopularPostsMixin:
 
 
 
-
-@method_decorator(cache_page(60 * 5), name="dispatch")
+@method_decorator(never_cache, name="dispatch")
 class PostListView(
     PermissionRequiredMixin, LoginRequiredMixin, PopularPostsMixin, ListView
 ):
@@ -153,6 +152,7 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("blog:post-list")
 
 
+@method_decorator(never_cache, name="dispatch")
 class PostsByTagView(LoginRequiredMixin, PopularPostsMixin, ListView):
     """
     filtering posts by selected tag.

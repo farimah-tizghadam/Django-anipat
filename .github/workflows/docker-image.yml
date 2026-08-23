@@ -23,8 +23,22 @@ jobs:
           docker --version
           docker compose version
 
-      - name: Build and start containers
-        run: docker compose up -d --build
+      - name: Build images (stage)
+        run: docker compose -f docker-compose-stage.yml build
+
+      - name: Start Postgres & Redis
+        run: docker compose -f docker-compose-stage.yml up -d postgres redis
+
+      - name: Wait for Postgres
+        run: |
+          docker compose -f docker-compose-stage.yml exec -T postgres \
+            sh -c 'until pg_isready -U admin -d anipat-db; do sleep 1; done'
+
+      - name: Run migrations
+        run: docker compose -f docker-compose-stage.yml run --rm migrate
+
+      - name: Start backend
+        run: docker compose -f docker-compose-stage.yml up -d backend
 
       - name: Show running containers
         run: docker compose ps

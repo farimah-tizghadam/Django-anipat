@@ -23,45 +23,90 @@ jobs:
           docker --version
           docker compose version
 
-      - name: Build and start containers
-        run: docker compose up -d --build
+      - name: Build images
+        run: docker compose -f docker-compose-stage.yml build
+
+      - name: Start PostgreSQL and Redis
+        run: |
+          docker compose -f docker-compose-stage.yml up -d postgres redis
+
+      - name: Wait for PostgreSQL
+        run: |
+          docker compose -f docker-compose-stage.yml exec -T postgres \
+            sh -c 'until pg_isready -U admin -d anipat-db; do sleep 1; done'
+
+      - name: Run migrations
+        run: |
+          docker compose -f docker-compose-stage.yml run --rm migrate
+
+      - name: Start backend
+        run: |
+          docker compose -f docker-compose-stage.yml up -d backend
 
       - name: Show running containers
-        run: docker compose ps
+        run: |
+          docker compose -f docker-compose-stage.yml ps
+
+      - name: Test PostgreSQL hostname
+        run: |
+          docker compose -f docker-compose-stage.yml exec -T backend \
+            python -c "import socket; print(socket.gethostbyname('postgres'))"
 
       - name: Run Django checks
-        run: docker compose exec -T backend python manage.py check
+        run: |
+          docker compose -f docker-compose-stage.yml exec -T backend \
+            python manage.py check
 
       - name: Check migrations
-        run: docker compose exec -T backend python manage.py makemigrations --check --dry-run
+        run: |
+          docker compose -f docker-compose-stage.yml exec -T backend \
+            python manage.py makemigrations --check --dry-run
 
-      - name: Run black
-        run: docker compose exec -T backend black .
+      - name: Check Black formatting
+        run: |
+          docker compose -f docker-compose-stage.yml exec -T backend \
+            black --check .
 
       - name: Run flake8
-        run: docker compose exec -T backend flake8 .
+        run: |
+          docker compose -f docker-compose-stage.yml exec -T backend \
+            flake8 .
 
       - name: Run pytest
-        run: docker compose exec -T backend pytest -v
+        run: |
+          docker compose -f docker-compose-stage.yml exec -T backend \
+            pytest -v
 
       - name: Show container logs on failure
         if: failure()
-        run: docker compose logs --no-color
+        run: |
+          docker compose -f docker-compose-stage.yml logs --no-color
 
 
-  Deploy:
-    if: ${{ always() && contains(join(needs.*.result, ','), 'success') }}
+  deploy:
     name: Deploy
-    needs: Test
+    needs: test
+
+    # Deploy only after successful tests,
+    # only for a push to main, not a pull request.
+    if: >
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      needs.test.result == 'success'
+
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Connect and Execute Commands
-        uses: appleboy/ssh-action@master
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Connect and execute commands
+        uses: appleboy/ssh-action@v1.2.2
         with:
-          username: ${{secrets.USERNAME}}
-          password: ${{secrets.PASSWORD}}
-          host: ${{secrets.HOST}}
-          port: ${{secrets.PORT}}
-          script: ls
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          host: ${{ secrets.HOST }}
+          port: ${{ secrets.PORT }}
+
+          script: |
+            ls

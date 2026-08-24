@@ -3,11 +3,14 @@ name: Django Project
 on:
   push:
     branches: ["main"]
+
   pull_request:
     branches: ["main"]
 
+
 jobs:
   test:
+    name: Test
     runs-on: ubuntu-latest
 
     env:
@@ -15,69 +18,99 @@ jobs:
       DEBUG: "False"
 
     steps:
+      # 1. Download your repository into the GitHub runner
       - name: Checkout repository
         uses: actions/checkout@v4
 
+
+      # 2. Make sure Docker and Compose are available
       - name: Check Docker versions
         run: |
           docker --version
           docker compose version
 
-      - name: Build images
-        run: docker compose -f docker-compose-stage.yml build
 
+      # 3. Build the Docker images defined in docker-compose-stage.yml
+      - name: Build images
+        run: |
+          docker compose -f docker-compose-stage.yml build
+
+
+      # 4. Start only PostgreSQL and Redis first
       - name: Start PostgreSQL and Redis
         run: |
           docker compose -f docker-compose-stage.yml up -d postgres redis
 
+
+      # 5. Wait until PostgreSQL is actually ready
       - name: Wait for PostgreSQL
         run: |
           docker compose -f docker-compose-stage.yml exec -T postgres \
             sh -c 'until pg_isready -U admin -d anipat-db; do sleep 1; done'
 
+
+      # 6. Run Django migrations
       - name: Run migrations
         run: |
           docker compose -f docker-compose-stage.yml run --rm migrate
 
+
+      # 7. Start Django backend
       - name: Start backend
         run: |
           docker compose -f docker-compose-stage.yml up -d backend
 
+
+      # 8. Show container state for debugging
       - name: Show running containers
         run: |
           docker compose -f docker-compose-stage.yml ps
 
-      - name: Test PostgreSQL hostname
+
+      # 9. Confirm backend can resolve the postgres service name
+      - name: Check PostgreSQL DNS
         run: |
           docker compose -f docker-compose-stage.yml exec -T backend \
             python -c "import socket; print(socket.gethostbyname('postgres'))"
 
+
+      # 10. Django configuration check
       - name: Run Django checks
         run: |
           docker compose -f docker-compose-stage.yml exec -T backend \
             python manage.py check
 
+
+      # 11. Fail if you forgot to commit a migration
       - name: Check migrations
         run: |
           docker compose -f docker-compose-stage.yml exec -T backend \
             python manage.py makemigrations --check --dry-run
 
+
+      # 12. Check formatting only
       - name: Check Black formatting
         run: |
           docker compose -f docker-compose-stage.yml exec -T backend \
             black --check .
 
+
+      # 13. Lint code
       - name: Run flake8
         run: |
           docker compose -f docker-compose-stage.yml exec -T backend \
             flake8 .
 
+
+      # 14. Run pytest
       - name: Run pytest
         run: |
           docker compose -f docker-compose-stage.yml exec -T backend \
             pytest -v
 
-      - name: Show container logs on failure
+
+      # 15. If anything failed, print all container logs
+      - name: Show logs on failure
         if: failure()
         run: |
           docker compose -f docker-compose-stage.yml logs --no-color
@@ -86,26 +119,23 @@ jobs:
   deploy:
     name: Deploy
     needs: test
+    runs-on: ubuntu-latest
 
-    # Deploy only after successful tests,
-    # only for a push to main, not a pull request.
     if: >
       github.event_name == 'push' &&
       github.ref == 'refs/heads/main' &&
       needs.test.result == 'success'
 
-    runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Connect and execute commands
+      - name: Connect to server
         uses: appleboy/ssh-action@v1.2.2
         with:
+          host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          host: ${{ secrets.HOST }}
           port: ${{ secrets.PORT }}
 
           script: |

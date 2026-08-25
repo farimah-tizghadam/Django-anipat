@@ -142,9 +142,21 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
+          timeout: 30s
+          command_timeout: 10m
 
-          script: | 
+          script: |
+            set -e
+
+            echo "Connected to server"
+
             cd ${{ secrets.PROJECT_PATH }}
-            docker-compose -f ${{secrets.DJANGO_SECRET_KEY_PROD}} stop
-            git pull
-            docker-compose -f ${{secrets.DJANGO_SECRET_KEY_PROD}} restart
+
+            echo "Pull latest code"
+            git pull origin main
+
+            echo "Deploy production stack"
+            docker-compose -f docker-compose-prod.yml up -d --build
+
+            echo "Container status"
+            docker-compose -f docker-compose-prod.yml ps

@@ -19,9 +19,9 @@ services:
       - "5432:5432"
     restart: always
     environment:
-      - POSTGRES_DB=anipat-db           
-      - POSTGRES_USER=admin             
-      - POSTGRES_PASSWORD=a/@123456
+      - POSTGRES_DB=${DB_NAME}           
+      - POSTGRES_USER=${DB_USER}             
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     healthcheck:
       test: ["CMD", "pg_isready", "-q", "-d", "anipat-db", "-U", "admin"]
       interval: 5s
@@ -36,12 +36,12 @@ services:
       - ./:/app
     command: python manage.py migrate --noinput
     environment:
-      - SECRET_KEY=test
+      - SECRET_KEY=${DJANGO_SECRET_KEY}
       - DEBUG=False
-      - DB_HOST=postgres
-      - DB_NAME=anipat-db
-      - DB_USER=admin
-      - DB_PASSWORD=a/@123456
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
     depends_on:
      - postgres 
 
@@ -56,12 +56,12 @@ services:
     expose:
       - 8000
     environment:
-      - SECRET_KEY=Test
+      - SECRET_KEY=${DJANGO_SECRET_KEY}
       - DEBUG=True
-      - DB_HOST=postgres
-      - DB_NAME=anipat-db         
-      - DB_USER=admin              
-      - DB_PASSWORD=a/@123456  
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}         
+      - DB_USER=${DB_USER}              
+      - DB_PASSWORD=${DB_PASSWORD}  
     depends_on:
       - redis
       - postgres
@@ -78,12 +78,12 @@ services:
       - backend
       - postgres
     environment:
-      - SECRET_KEY=Test
+      - SECRET_KEY=${DJANGO_SECRET_KEY}
       - DEBUG=False
-      - DB_NAME=anipat-db
-      - DB_USER=admin
-      - DB_PASSWORD=a/@123456
-      - DB_HOST=postgres
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
 
   celery_worker:
     build: .
@@ -91,7 +91,7 @@ services:
       - ./core:/app
     command: celery -A core worker -l INFO
     environment:
-      - SECRET_KEY=Test
+      - SECRET_KEY=${DJANGO_SECRET_KEY}
       - DEBUG=True
     depends_on:
       - redis

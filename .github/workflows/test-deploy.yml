@@ -14,12 +14,13 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      SECRET_KEY: github-actions-test-secret-key-longer-than-32-characters
+      DJANGO_SECRET_KEY: github-actions-test-secret-key-longer-than-32-characters
       DEBUG: "False"
       DB_HOST: postgres
       DB_NAME: anipat_test
       DB_USER: testuser
       DB_PASSWORD: testpassword
+      DB_PORT: "5432"
 
     steps:
       # 1. Download your repository into the GitHub runner
@@ -50,7 +51,7 @@ jobs:
       - name: Wait for PostgreSQL
         run: |
           docker compose -f docker-compose-stage.yml exec -T postgres \
-            sh -c 'until pg_isready -U admin -d anipat-db; do sleep 1; done'
+          sh -c 'until pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"; do sleep 1; done'
 
 
       # 6. Run Django migrations

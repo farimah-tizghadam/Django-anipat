@@ -16,6 +16,10 @@ jobs:
     env:
       SECRET_KEY: github-actions-test-secret-key-longer-than-32-characters
       DEBUG: "False"
+      DB_HOST: postgres
+      DB_NAME: anipat_test
+      DB_USER: testuser
+      DB_PASSWORD: testpassword
 
     steps:
       # 1. Download your repository into the GitHub runner

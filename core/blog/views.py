@@ -34,7 +34,6 @@ class PopularPostsMixin:
             cache.set(key, posts, timeout=60 * 5)
         return posts
 
-
     def get_categories(self):
         key = "blog:categories"
         categories = cache.get(key)
@@ -54,7 +53,6 @@ class PopularPostsMixin:
         context["categories"] = self.get_categories()
 
         return context
-
 
 
 @method_decorator(never_cache, name="dispatch")

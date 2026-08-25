@@ -13,7 +13,6 @@ from django.shortcuts import redirect
 # Create your views here.
 
 
-
 @method_decorator(ensure_csrf_cookie, name="dispatch")
 class CustomLoginView(LoginView):
     template_name = "accounts/login.html"
@@ -25,6 +24,7 @@ class CustomLoginView(LoginView):
 
     def get_redirect_url(self):
         return ""
+
 
 class RegisterPageView(CreateView):
     template_name = "accounts/register.html"
@@ -42,6 +42,7 @@ class RegisterPageView(CreateView):
         )
 
         return response
+
 
 class CustomLogoutView(View):
     def post(self, request):

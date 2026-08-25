@@ -140,6 +140,6 @@ jobs:
 
           script: | 
             cd ${{ secrets.PROJECT_PATH }}
-            docker-compose -f ${{secrets.DJANGO_SECRET_KEY_STAGE}} stop
+            docker-compose -f ${{secrets.DJANGO_SECRET_KEY_PROD}} stop
             git pull
-            docker-compose -f ${{secrets.DJANGO_SECRET_KEY_STAGE}} restart
+            docker-compose -f ${{secrets.DJANGO_SECRET_KEY_PROD}} restart

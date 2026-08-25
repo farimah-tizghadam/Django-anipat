@@ -138,5 +138,8 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
 
-          script: |
-            ls
+          script: | 
+            cd ${{ secrets.PROJECT_PATH }}
+            docker-compose -f ${{secrets.DJANGO_SECRET_KEY_STAGE}} stop
+            git pull
+            docker-compose -f ${{secrets.DJANGO_SECRET_KEY_STAGE}} restart

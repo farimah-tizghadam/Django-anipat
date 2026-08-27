@@ -4,13 +4,28 @@ from django.views.generic.edit import CreateView
 from django.views import View
 
 from .forms import CustomUserCreationForm, LoginForm
-from .tasks import send_welcome_email
+from .tasks import send_activation_email
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils.decorators import method_decorator
 from django.contrib.auth import logout
 from django.shortcuts import redirect
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.urls import reverse
+
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_decode
+from django.shortcuts import redirect
+from django.contrib import messages
+
+from .models import CustomUser
+
+from django.contrib.auth import get_user_model
 
 # Create your views here.
+
+User = get_user_model()
 
 
 @method_decorator(ensure_csrf_cookie, name="dispatch")
@@ -32,19 +47,63 @@ class RegisterPageView(CreateView):
     success_url = reverse_lazy("accounts:login")
 
     def form_valid(self, form):
-        response = super().form_valid(form)
+        user = form.save(commit=False)
+        user.is_active = False
+        user.save()
 
-        user = self.object
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
 
-        send_welcome_email.delay(
-            user.email,
-            user.first_name,
+        activation_path = reverse(
+            "accounts:activate",
+            kwargs={
+                "uidb64": uid,
+                "token": token
+            },
         )
 
-        return response
+        activation_url = self.request.build_absolute_uri(
+            activation_path
+        )
+
+        send_activation_email.delay(
+            user.email,
+            user.first_name,
+            activation_url,
+)
+
+        self.object = user
+        return redirect(self.success_url)
 
 
 class CustomLogoutView(View):
     def post(self, request):
         logout(request)
         return redirect("accounts:login")
+
+
+
+def activate_account(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save(update_fields=["is_active"])
+
+        messages.success(
+            request,
+            "Your account has been activated. You can now log in."
+        )
+
+        return redirect("accounts:login")
+
+    messages.error(
+        request,
+        "The activation link is invalid or has expired."
+    )
+
+    return redirect("accounts:login")

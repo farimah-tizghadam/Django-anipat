@@ -34,8 +34,10 @@
                                 <ul class="blog-info-link">
                                     <li><a href="#"><i class="fa fa-user"></i> Travel, Lifestyle</a></li>
                                     <li><a href="#"><i class="fa fa-comments"></i> {{ post.comments.count }} Comments</a></li>
-                                    <li><a href="{% url 'blog:post-edit' post.pk %}"><i class="fa fa-pencil"></i>Edit Post</a></li>
-                                    <li><a href="{% url 'blog:post-delete' post.pk %}"><i class="fa fa-remove"></i>Delete Post</a></li>
+                                    {% if user.is_authenticated and post.author == user %}
+                                        <li><a href="{% url 'blog:post-edit' post.pk %}"><i class="fa fa-pencil"></i>Edit Post</a></li>
+                                        <li><a href="{% url 'blog:post-delete' post.pk %}"><i class="fa fa-remove"></i>Delete Post</a></li>
+                                    {% endif %}
 
 
                                 </ul>

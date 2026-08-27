@@ -4,11 +4,13 @@ from django.core.mail import send_mail
 
 
 @shared_task
-def send_welcome_email(email, first_name):
+def send_activation_email(email, name, activation_url):
     send_mail(
-        subject="Welcome!",
-        message=f"Hello {first_name}, welcome to our website!",
-        from_email=settings.DEFAULT_FROM_EMAIL,
+        "accounts/email/activate_account.tpl",
+        {
+            "name": name,
+            "activation_url": activation_url,
+        },
+        from_email=None,
         recipient_list=[email],
-        fail_silently=False,
     )

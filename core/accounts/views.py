@@ -19,7 +19,6 @@ from django.utils.http import urlsafe_base64_decode
 from django.shortcuts import redirect
 from django.contrib import messages
 
-from .models import CustomUser
 
 from django.contrib.auth import get_user_model
 
@@ -87,7 +86,7 @@ def activate_account(request, uidb64, token):
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
         user = User.objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
 
     if user is not None and default_token_generator.check_token(user, token):

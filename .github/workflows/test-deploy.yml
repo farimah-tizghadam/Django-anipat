@@ -21,6 +21,7 @@ jobs:
       DB_USER: testuser
       DB_PASSWORD: testpassword
       DB_PORT: "5432"
+      EMAIL_BACKEND: django.core.mail.backends.locmem.EmailBackend
 
     steps:
       # 1. Download your repository into the GitHub runner

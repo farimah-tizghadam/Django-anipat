@@ -57,7 +57,7 @@ class PopularPostsMixin:
 
 @method_decorator(never_cache, name="dispatch")
 class PostListView(
-    PermissionRequiredMixin, LoginRequiredMixin, PopularPostsMixin, ListView
+    LoginRequiredMixin, PopularPostsMixin, ListView
 ):
     """
     this is a CBV for getting the posts list.
@@ -117,7 +117,7 @@ class PostDetailView(LoginRequiredMixin, PopularPostsMixin, DetailView):
         return context
 
 
-class PostCreateView(LoginRequiredMixin, CreateView):
+class PostCreateView(LoginRequiredMixin,PermissionRequiredMixin, CreateView):
     """
     CBV for creating post
     """
@@ -126,12 +126,15 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     form_class = PostForm
     success_url = reverse_lazy("blog:post-detail")
 
+    POPULAR_POSTS_CACHE_KEY = "blog:popular_posts"
+
+
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
 
-class PostEditView(LoginRequiredMixin, UpdateView):
+class PostEditView(LoginRequiredMixin,PermissionRequiredMixin, UpdateView):
     """
     CBV class for update/edit post
     """
@@ -139,6 +142,9 @@ class PostEditView(LoginRequiredMixin, UpdateView):
     model = Post
     form_class = PostForm
     success_url = reverse_lazy("blog:post-list")
+
+    POPULAR_POSTS_CACHE_KEY = "blog:popular_posts"
+
 
 
 class PostDeleteView(LoginRequiredMixin, DeleteView):
@@ -148,6 +154,11 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
 
     model = Post
     success_url = reverse_lazy("blog:post-list")
+
+    cache.delete("popular_posts")
+    POPULAR_POSTS_CACHE_KEY = "blog:popular_posts"
+
+
 
 
 @method_decorator(never_cache, name="dispatch")

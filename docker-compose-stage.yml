@@ -57,7 +57,7 @@ services:
       - 8000
     environment:
       - SECRET_KEY=${DJANGO_SECRET_KEY}
-      - DEBUG=True
+      - DEBUG=False
       - DB_HOST=${DB_HOST}
       - DB_NAME=${DB_NAME}         
       - DB_USER=${DB_USER}              
@@ -92,9 +92,21 @@ services:
       - ./core:/app
     command: celery -A core worker -l INFO
     environment:
-      - SECRET_KEY=${DJANGO_SECRET_KEY}
-      - DEBUG=True
-      - EMAIL_BACKEND=${EMAIL_BACKEND}
+      SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DEBUG: "False"
+
+      DB_HOST: ${DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+      EMAIL_BACKEND: ${EMAIL_BACKEND}
+      EMAIL_HOST: ${EMAIL_HOST}
+      EMAIL_PORT: ${EMAIL_PORT}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS}
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL}
     depends_on:
       - redis
       - backend

@@ -31,8 +31,8 @@
                </div>
                <div class="navigation-top">
                   <div class="d-sm-flex justify-content-between text-center">
-                     <p class="like-info"><span class="align-middle"><i class="fa fa-heart"></i></span> Lily and 4
-                        people like this</p>
+                     <p class="like-info"><span class="align-middle"><i class="fa fa-heart"></i></span> {{comments|length}}
+                        people comment on this</p>
                      <div class="col-sm-4 text-center my-2 my-sm-0">
                         <!-- <p class="comment-count"><span class="align-middle"><i class="fa fa-comment"></i></span> 06 Comments</p> -->
                      </div>
@@ -92,10 +92,10 @@
                </div>
                <div class="blog-author">
                   <div class="media align-items-center">
-                     <img src="{% static 'img/blog/author.png' %}" alt="">
+                     <img src="{{post.author.image.url}}" alt="">
                      <div class="media-body">
                         <a href="#">
-                           <h4>{{ post.author.first_name }}</h4>
+                           <h4>{{ post.author.user.email }}</h4>
                         </a>
                         <p>Second divided from form fish beast made. Every of seas all gathered use saying you're, he
                            our dominion twon Second divided from</p>
@@ -109,7 +109,7 @@
                      <div class="single-comment justify-content-between d-flex">
                         <div class="user justify-content-between d-flex">
                            <div class="thumb">
-                              <img src="{% static 'img/comment/comment_1.png' %}" alt="">
+                              <img src="{{post.author.image.url}}" alt="">
                            </div>
                            <div class="desc">
                               <p class="comment">{{comment.message}}</p>
@@ -134,35 +134,50 @@
                </div>
                <div class="comment-form">
                   <h4>Leave a Reply</h4>
-                  <form class="form-contact comment_form" method="post" action="{% url 'comment:comment-create' pk=post.pk %}" id="commentForm">
-                     <div class="row">
-                        {% csrf_token %}
-                        <div class="col-12">
-                           <div class="form-group">
-                              <textarea class="form-control w-100" name="message" id="comment" cols="30" rows="9"
-                                 placeholder="Write Comment"></textarea>
+                  {% if request.user.is_authenticated %}
+                     <form class="form-contact comment_form" method="post" action="{% url 'comment:comment-create' pk=post.pk %}" id="commentForm">
+                        <div class="row">
+                           {% csrf_token %}
+                           <div class="col-12">
+                              <div class="form-group">
+                                 <textarea class="form-control w-100" name="message" id="comment" cols="30" rows="9"
+                                    placeholder="Write Comment"></textarea>
+                              </div>
+                           </div>
+                        {% if request.user.is_authenticated %}
+                           <div class="col-sm-6">
+                              <div class="form-group">
+                                 <input class="form-control" name="name" id="name" value="{{request.user.first_name}}" type="text" placeholder="Name">
+                              </div>
+                           </div>
+                           <div class="col-sm-6">
+                              <div class="form-group">
+                                 <input class="form-control" name="email" id="email" value="{{request.user.email}}" type="email" placeholder="Email">
+                              </div>
+                           </div>
+                        {% endif %}
+                           <div class="col-12">
+                              <div class="form-group">
+                                 <input class="form-control" name="subject" id="subject" type="text" placeholder="subject">
+                              </div>
                            </div>
                         </div>
-                        <div class="col-sm-6">
-                           <div class="form-group">
-                              <input class="form-control" name="name" id="name" type="text" placeholder="Name">
-                           </div>
+                        <div class="form-group">
+                           <button type="submit" class="button button-contactForm btn_1 boxed-btn">Send Message</button>
                         </div>
-                        <div class="col-sm-6">
-                           <div class="form-group">
-                              <input class="form-control" name="email" id="email" type="email" placeholder="Email">
-                           </div>
-                        </div>
-                        <div class="col-12">
-                           <div class="form-group">
-                              <input class="form-control" name="subject" id="subject" type="text" placeholder="subject">
-                           </div>
-                        </div>
-                     </div>
-                     <div class="form-group">
-                        <button type="submit" class="button button-contactForm btn_1 boxed-btn">Send Message</button>
-                     </div>
-                  </form>
+                     </form>
+                  {% else %}
+                     <h4>Want to leave a comment?</h4>
+
+                     <p>You must be logged in to comment.</p>
+
+                     <a
+                           href="{% url 'accounts:login' %}?next={{ request.path }}"
+                           class="primary-btn text-uppercase"
+                     >
+                           Log in to comment
+                     </a>
+                  {% endif %}
                </div>
             </div>
             <div class="col-lg-4">

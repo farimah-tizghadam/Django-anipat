@@ -70,6 +70,11 @@ class RegisterPageView(CreateView):
             user.first_name,
             activation_url,
 )
+        messages.success(
+                self.request,
+                    "activation/verification email has been sent."
+                )
+        
 
         self.object = user
         return redirect(self.success_url)
@@ -91,7 +96,8 @@ def activate_account(request, uidb64, token):
 
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
-        user.save(update_fields=["is_active"])
+        user.is_verified = True
+        user.save(update_fields=["is_active", "is_verified"])
 
         messages.success(
             request,

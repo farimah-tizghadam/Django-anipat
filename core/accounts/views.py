@@ -17,18 +17,18 @@ from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 
-
 # Create your views here.
 
-#getting custom user
+# getting custom user
 User = get_user_model()
 
 
 @method_decorator(ensure_csrf_cookie, name="dispatch")
 class CustomLoginView(LoginView):
     """
-    a custom login view with a decorator to ensure that a view sets a CSRF cookie 
+    a custom login view with a decorator to ensure that a view sets a CSRF cookie
     """
+
     template_name = "accounts/login.html"
     authentication_form = LoginForm
     redirect_authenticated_user = True
@@ -42,9 +42,10 @@ class CustomLoginView(LoginView):
 
 class RegisterPageView(CreateView):
     """
-    a class for register user and generates uid and token, pass them to 
+    a class for register user and generates uid and token, pass them to
     the existed task then sends activation/verification email
     """
+
     template_name = "accounts/register.html"
     form_class = CustomUserCreationForm
     success_url = reverse_lazy("accounts:login")
@@ -83,8 +84,8 @@ class CustomLogoutView(View):
 
 def activate_account(request, uidb64, token):
     """
-        Activates a user's account by validating the user ID and activation token.
-        If valid, marks the user as active and verified, then redirects to login.
+    Activates a user's account by validating the user ID and activation token.
+    If valid, marks the user as active and verified, then redirects to login.
     """
     try:
         uid = urlsafe_base64_decode(uidb64).decode()

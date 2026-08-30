@@ -27,5 +27,5 @@ urlpatterns = [
         "api/v1/",
         include("accounts.api.v1.urls", namespace="accounts-api-v1"),
     ),
-    path("activation/<uidb64>/<token>/", views.activate_account, name="activate")
+    path("activation/<uidb64>/<token>/", views.activate_account, name="activate"),
 ]

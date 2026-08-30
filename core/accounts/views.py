@@ -55,26 +55,17 @@ class RegisterPageView(CreateView):
 
         activation_path = reverse(
             "accounts:activate",
-            kwargs={
-                "uidb64": uid,
-                "token": token
-            },
+            kwargs={"uidb64": uid, "token": token},
         )
 
-        activation_url = self.request.build_absolute_uri(
-            activation_path
-        )
+        activation_url = self.request.build_absolute_uri(activation_path)
 
         send_activation_email.delay(
             user.email,
             user.first_name,
             activation_url,
-)
-        messages.success(
-                self.request,
-                    "activation/verification email has been sent."
-                )
-        
+        )
+        messages.success(self.request, "activation/verification email has been sent.")
 
         self.object = user
         return redirect(self.success_url)
@@ -84,7 +75,6 @@ class CustomLogoutView(View):
     def post(self, request):
         logout(request)
         return redirect("accounts:login")
-
 
 
 def activate_account(request, uidb64, token):
@@ -100,15 +90,11 @@ def activate_account(request, uidb64, token):
         user.save(update_fields=["is_active", "is_verified"])
 
         messages.success(
-            request,
-            "Your account has been activated. You can now log in."
+            request, "Your account has been activated. You can now log in."
         )
 
         return redirect("accounts:login")
 
-    messages.error(
-        request,
-        "The activation link is invalid or has expired."
-    )
+    messages.error(request, "The activation link is invalid or has expired.")
 
     return redirect("accounts:login")

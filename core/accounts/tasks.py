@@ -5,6 +5,9 @@ from mail_templated import send_mail
 
 @shared_task
 def send_activation_email(email, name, activation_url):
+    """
+    this task maintenance email context 
+    """
     send_mail(
         "email/activation.tpl",
         {

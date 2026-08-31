@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from accounts.models import Profile
@@ -18,11 +18,6 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ["email", "password1", "password2"]
-
-
-from django import forms
-from django.contrib.auth.forms import AuthenticationForm
-from django.utils.translation import gettext_lazy as _
 
 
 class LoginForm(AuthenticationForm):

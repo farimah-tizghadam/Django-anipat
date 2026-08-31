@@ -43,7 +43,6 @@ class CustomLoginView(LoginView):
         return reverse("blog:post-list")
 
 
-
 class RegisterPageView(CreateView):
     """
     a class for register user and generates uid and token, pass them to
@@ -113,7 +112,6 @@ def activate_account(request, uidb64, token):
     return redirect("accounts:login")
 
 
-
 class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = "accounts/profile.html"
 
@@ -123,12 +121,8 @@ class ProfileView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context["user_form"] = UserEditForm(
-            instance=self.request.user
-        )
-        context["profile_form"] = ProfileEditForm(
-            instance=self.get_profile()
-        )
+        context["user_form"] = UserEditForm(instance=self.request.user)
+        context["profile_form"] = ProfileEditForm(instance=self.get_profile())
 
         return context
 

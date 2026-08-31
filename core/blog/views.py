@@ -14,6 +14,7 @@ from django.views.generic import (
 from django.contrib.auth.mixins import (
     LoginRequiredMixin,
     PermissionRequiredMixin,
+    UserPassesTestMixin,
 )
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
@@ -131,7 +132,7 @@ class PostCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class PostEditView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class PostEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     """
     CBV class for update/edit post
     """
@@ -141,6 +142,10 @@ class PostEditView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     success_url = reverse_lazy("blog:post-list")
 
     POPULAR_POSTS_CACHE_KEY = "blog:popular_posts"
+
+    def test_func(self):
+        post = self.get_object()
+        return post.author.user == self.request.user
 
 
 class PostDeleteView(LoginRequiredMixin, DeleteView):

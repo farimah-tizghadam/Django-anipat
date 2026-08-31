@@ -11,7 +11,9 @@
             <div class="col-lg-8 posts-list">
                <div class="single-post">
                   <div class="feature-img">
+                     {% if post.image %}
                      <img class="img-fluid" src="{{post.image.url}}" alt="">
+                     {% endif %}
                   </div>
                   <div class="blog_details">
                      <h2>{{post.title}}</h2>

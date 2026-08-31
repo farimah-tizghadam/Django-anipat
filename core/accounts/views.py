@@ -17,6 +17,12 @@ from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView
+from accounts.forms import UserEditForm, ProfileEditForm
+from .models import Profile
+
 # Create your views here.
 
 # getting custom user
@@ -34,10 +40,8 @@ class CustomLoginView(LoginView):
     redirect_authenticated_user = True
 
     def get_success_url(self):
-        return reverse_lazy("blog:post-list")
+        return reverse("blog:post-list")
 
-    def get_redirect_url(self):
-        return ""
 
 
 class RegisterPageView(CreateView):
@@ -107,3 +111,65 @@ def activate_account(request, uidb64, token):
     messages.error(request, "The activation link is invalid or has expired.")
 
     return redirect("accounts:login")
+
+
+
+class ProfileView(LoginRequiredMixin, TemplateView):
+    template_name = "accounts/profile.html"
+
+    def get_profile(self):
+        return Profile.objects.get(user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["user_form"] = UserEditForm(
+            instance=self.request.user
+        )
+        context["profile_form"] = ProfileEditForm(
+            instance=self.get_profile()
+        )
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        profile = self.get_profile()
+
+        user_form = UserEditForm(
+            request.POST,
+            instance=user,
+        )
+
+        profile_form = ProfileEditForm(
+            request.POST,
+            request.FILES,
+            instance=profile,
+        )
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user = user_form.save(commit=False)
+
+            password = user_form.cleaned_data.get("password")
+
+            if password:
+                user.set_password(password)
+
+            user.save()
+            profile_form.save()
+
+            if password:
+                update_session_auth_hash(request, user)
+
+            messages.success(
+                request,
+                "Profile edited successfully.",
+            )
+
+            return redirect("accounts:profile")
+
+        context = self.get_context_data()
+        context["user_form"] = user_form
+        context["profile_form"] = profile_form
+
+        return self.render_to_response(context)

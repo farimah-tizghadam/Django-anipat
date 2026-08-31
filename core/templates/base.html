@@ -103,6 +103,9 @@
                                         <li><a href="{% url 'website:about' %}">about</a></li>
                                         <li><a href="{% url 'blog:post-list' %}">blog </a></i>
                                         <li><a href="{% url 'website:contact' %}">Contact</a></li>
+                                        {% if request.user.is_authenticated %}
+                                            <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
+                                        {% endif %}
                                     </ul>
                                 </nav>
                             </div>

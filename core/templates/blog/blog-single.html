@@ -92,7 +92,11 @@
                </div>
                <div class="blog-author">
                   <div class="media align-items-center">
-                     <img src="{{post.author.image.url}}" alt="">
+                  {% if post.author.image %}
+                     <img src="{{ post.author.image.url }}" alt="">
+                  {% else %}
+                     <img src="{% static 'img/default-profile.png' %}" alt="">
+                  {% endif %}
                      <div class="media-body">
                         <a href="#">
                            <h4>{{ post.author.user.email }}</h4>

@@ -135,7 +135,6 @@ class PostCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         response = super().form_valid(form)
         return response
 
-
     def form_invalid(self, form):
         return super().form_invalid(form)
 
@@ -144,6 +143,7 @@ class PostCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
             "blog:post-detail",
             kwargs={"pk": self.object.pk},
         )
+
 
 class PostEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     """

@@ -6,6 +6,7 @@ class PostForm(forms.ModelForm):
     """
     This is a form for post model
     """
+
     class Meta:
         model = Post
 
@@ -26,7 +27,6 @@ class PostForm(forms.ModelForm):
                     "placeholder": "Enter post title",
                 }
             ),
-
             "content": forms.Textarea(
                 attrs={
                     "class": "form-control",
@@ -34,20 +34,17 @@ class PostForm(forms.ModelForm):
                     "placeholder": "Write your post...",
                 }
             ),
-
             "category": forms.Select(
                 attrs={
                     "class": "form-control",
                 }
             ),
-
             "tags": forms.TextInput(
                 attrs={
                     "class": "form-control",
                     "placeholder": "dog, cat, pet care",
                 }
             ),
-
             "image": forms.ClearableFileInput(
                 attrs={
                     "class": "form-control",

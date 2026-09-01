@@ -21,6 +21,7 @@ from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.core.cache import cache
+from django.urls import reverse
 
 
 class PopularPostsMixin:
@@ -123,14 +124,26 @@ class PostCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 
     model = Post
     form_class = PostForm
-    success_url = reverse_lazy("blog:post-detail")
+    permission_required = "blog.add_post"
 
     POPULAR_POSTS_CACHE_KEY = "blog:popular_posts"
 
     def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
 
+        profile = self.request.user.profile_set.first()
+        form.instance.author = profile
+        response = super().form_valid(form)
+        return response
+
+
+    def form_invalid(self, form):
+        return super().form_invalid(form)
+
+    def get_success_url(self):
+        return reverse(
+            "blog:post-detail",
+            kwargs={"pk": self.object.pk},
+        )
 
 class PostEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     """
@@ -143,12 +156,13 @@ class PostEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     POPULAR_POSTS_CACHE_KEY = "blog:popular_posts"
 
+    # This func prevents user to manually change the URL from
     def test_func(self):
         post = self.get_object()
         return post.author.user == self.request.user
 
 
-class PostDeleteView(LoginRequiredMixin, DeleteView):
+class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     """
     CBV for Delete post
     """
@@ -158,6 +172,11 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
 
     cache.delete("popular_posts")
     POPULAR_POSTS_CACHE_KEY = "blog:popular_posts"
+
+    # This func prevents user to manually change the URL from
+    def test_func(self):
+        post = self.get_object()
+        return post.author.user == self.request.user
 
 
 @method_decorator(never_cache, name="dispatch")

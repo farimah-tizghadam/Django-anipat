@@ -1,5 +1,67 @@
-<form method="post">
-    {% csrf_token %}
-    <p>Are you sure you want to delete "{{ object }}"?</p>
-    <input type="submit" value="Confirm">
-</form>
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    Delete Post
+{% endblock %}
+
+{% block content %}
+
+<section class="contact-section section-padding">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7 col-md-9">
+
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center p-5">
+
+                        <!-- Warning icon -->
+                        <div class="mb-4">
+                            <i class="fa fa-exclamation-triangle"
+                               style="font-size: 55px; color: #ff3500;">
+                            </i>
+                        </div>
+
+                        <!-- Heading -->
+                        <h2 class="mb-3">
+                            Delete Post?
+                        </h2>
+
+                        <p class="text-muted mb-2">
+                            Are you sure you want to delete
+                        </p>
+
+                        <h4 class="mb-4">
+                            "{{ object.title }}"
+                        </h4>
+
+                        <p class="text-muted mb-4">
+                            This action cannot be undone.
+                        </p>
+
+                        <!-- Delete form -->
+                        <form method="post">
+                            {% csrf_token %}
+
+                            <button type="submit"
+                                    class="btn btn-danger px-4 py-2 mr-3">
+                                <i class="fa fa-trash mr-2"></i>
+                                Yes, Delete
+                            </button>
+
+                            <a href="{% url 'blog:post-detail' object.pk %}"
+                               class="btn btn-outline-secondary px-4 py-2">
+                                Cancel
+                            </a>
+
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

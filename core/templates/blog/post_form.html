@@ -1,15 +1,215 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Post</title>
-</head>
-<body>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="send">
-    </form>
-</body>
-</html>
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- Create Post Area -->
+<section class="contact-section section-padding">
+    <div class="container">
+
+        <!-- Page heading -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="section_title text-center mb-50">
+                    {% if form.instance.pk %}
+                        <h5>Edit your post</h5>
+                    {% else %}
+                        <h5>Create your Post</h5>
+                    {% endif %}
+                    <small>
+                        Share your story, experience, or something interesting
+                        with the community.
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+
+                <!-- Messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} mb-4">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <!-- Form errors -->
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            <p class="mb-0">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4 p-md-5">
+
+                        <form method="post"
+                              enctype="multipart/form-data">
+
+                            {% csrf_token %}
+
+                            <!-- Title -->
+                            <div class="form-group mb-4">
+                                <label for="{{ form.title.id_for_label }}">
+                                    Post Title
+                                </label>
+
+                                {{ form.title }}
+
+                                {% for error in form.title.errors %}
+                                    <small class="text-danger d-block mt-1">
+                                        {{ error }}
+                                    </small>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Content -->
+                            <div class="form-group mb-4">
+                                <label for="{{ form.content.id_for_label }}">
+                                    Content
+                                </label>
+
+                                {{ form.content }}
+
+                                {% for error in form.content.errors %}
+                                    <small class="text-danger d-block mt-1">
+                                        {{ error }}
+                                    </small>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Image -->
+                            <div class="form-group mb-4">
+                                <label for="{{ form.image.id_for_label }}">
+                                    Post Image
+                                </label>
+
+                                {{ form.image }}
+
+                                <small class="form-text text-muted">
+                                    Choose an image for your post.
+                                </small>
+
+                                {% for error in form.image.errors %}
+                                    <small class="text-danger d-block mt-1">
+                                        {{ error }}
+                                    </small>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Category -->
+                            <div class="form-group mb-4">
+                                <label for="{{ form.category.id_for_label }}">
+                                    Category
+                                </label>
+
+                                {{ form.category }}
+
+                                {% for error in form.category.errors %}
+                                    <small class="text-danger d-block mt-1">
+                                        {{ error }}
+                                    </small>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Tags -->
+                            <div class="form-group mb-4">
+                                <label for="{{ form.tags.id_for_label }}">
+                                    Tags
+                                </label>
+
+                                {{ form.tags }}
+
+                                <small class="form-text text-muted">
+                                    Separate tags with commas.
+                                </small>
+
+                                {% for error in form.tags.errors %}
+                                    <small class="text-danger d-block mt-1">
+                                        {{ error }}
+                                    </small>
+                                {% endfor %}
+                            </div>
+
+
+                            <div class="form-group mb-4">
+                                <label for="{{ form.published_date.id_for_label }}">
+                                    Published Date
+                                </label>
+
+                                {{ form.published_date }}
+
+                                {% if form.published_date.help_text %}
+                                    <small class="form-text text-muted">
+                                        {{ form.published_date.help_text }}
+                                    </small>
+                                {% endif %}
+
+                                {% for error in form.published_date.errors %}
+                                    <small class="text-danger d-block mt-1">
+                                        {{ error }}
+                                    </small>
+                                {% endfor %}
+                            </div>
+
+
+                            <div class="form-group mb-4">
+                                <div class="form-check">
+                                    {{ form.status }}
+
+                                    <label
+                                        class="form-check-label ml-2"
+                                        for="{{ form.status.id_for_label }}">
+                                        Publish this post
+                                    </label>
+                                </div>
+
+                                <small class="form-text text-muted">
+                                    Uncheck this if you want to save the post as unpublished.
+                                </small>
+
+                                {% for error in form.status.errors %}
+                                    <small class="text-danger d-block mt-1">
+                                        {{ error }}
+                                    </small>
+                                {% endfor %}
+                            </div>
+                            
+
+
+                            <!-- Buttons -->
+                            <div class="d-flex align-items-center mt-4">
+
+                                <button type="submit"
+                                        class="boxed-btn">
+                                    Publish Post
+                                </button>
+
+                                <a href="{% url 'blog:post-list' %}"
+                                   class="ml-4">
+                                    Cancel
+                                </a>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

@@ -52,7 +52,7 @@ class RegistrationAPIView(generics.CreateAPIView):
         email_obj = EmailMessage(
             "email/activation.tpl",
             {
-                "name": user.first_name or user.email,
+                "name": user.email,
                 "token": token,
                 "activation_url": activation_url,
             },

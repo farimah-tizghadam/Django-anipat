@@ -15,7 +15,7 @@ class CustomUserAdmin(UserAdmin):
         (
             "Authentication",
             {
-                "fields": ("email", "password"),
+                "fields": ("email", "password", "first_name"),
             },
         ),
         (

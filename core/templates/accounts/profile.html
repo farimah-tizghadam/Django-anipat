@@ -29,9 +29,9 @@
 					<div class="">
 						{% csrf_token %}
 						<div class="col-lg-6 form-group">
-							<label>first_name:</label>
+							<label for="{{ profile_form.first_name.id_for_label }}">first_name:</label>
 							<input name="first_name" placeholder="Enter your name" onfocus="this.placeholder = ''"
-								class="common-input mb-20 form-control" value="{{request.user.first_name}}"
+								class="common-input mb-20 form-control" value="{{profile_form.first_name.value|default_if_none:''}}"
 								onblur="this.placeholder = 'Enter your name'" type="text" >
 
 							<label>last_name:</label>

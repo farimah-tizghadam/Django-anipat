@@ -5,7 +5,7 @@ Reset your password
 {% endblock %}
 
 {% block body %}
-Hello {{ name }},
+Hello {{ email }},
 
 We received a request to reset your password.
 
@@ -19,7 +19,7 @@ If you did not request a password reset, ignore this email.
 {% block html %}
 <h2>Reset your password</h2>
 
-<p>Hello {{ name }},</p>
+<p>Hello {{ email }},</p>
 
 <p>We received a request to reset your password.</p>
 

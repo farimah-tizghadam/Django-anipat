@@ -70,7 +70,6 @@ class RegisterPageView(CreateView):
 
         send_activation_email.delay(
             user.email,
-            user.first_name,
             activation_url,
         )
         messages.success(self.request, "activation/verification email has been sent.")

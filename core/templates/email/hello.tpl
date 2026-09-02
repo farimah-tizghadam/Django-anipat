@@ -5,7 +5,7 @@ Welcome to Blog App
 {% endblock %}
 
 {% block body %}
-Hello {{ name }},
+Hello {{ email }},
 
 Your account has been activated successfully.
 
@@ -15,7 +15,7 @@ Welcome to Blog App.
 {% block html %}
 <h2>Welcome!</h2>
 
-<p>Hello {{ name }},</p>
+<p>Hello {{ email }},</p>
 
 <p>Your account has been activated successfully.</p>
 

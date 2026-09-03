@@ -21,7 +21,14 @@ jobs:
       DB_USER: testuser
       DB_PASSWORD: testpassword
       DB_PORT: "5432"
+
       EMAIL_BACKEND: django.core.mail.backends.locmem.EmailBackend
+      EMAIL_HOST: localhost
+      EMAIL_PORT: "587"
+      EMAIL_HOST_USER: test@example.com
+      EMAIL_HOST_PASSWORD: test-password
+      EMAIL_USE_TLS: "False"
+      DEFAULT_FROM_EMAIL: test@example.com
 
     steps:
       # 1. Download your repository into the GitHub runner
@@ -53,39 +60,34 @@ jobs:
         run: |
           docker compose -f docker-compose-stage.yml exec -T postgres \
           sh -c 'until pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"; do sleep 1; done'
-
-
-      # 6. Run Django migrations
-      - name: Run migrations
-        run: |
-          docker compose -f docker-compose-stage.yml run --rm migrate
-
-
-      # 7. Start Django backend
+      # 6. Start Django backend
       - name: Start backend
         run: |
           docker compose -f docker-compose-stage.yml up -d backend
 
-
-      # 8. Show container state for debugging
-      - name: Show running containers
+      # 7. Run Django migrations
+      - name: Run migrations
         run: |
-          docker compose -f docker-compose-stage.yml ps
+          docker compose -f docker-compose-stage.yml run --rm migrate
 
-
-      # 9. Confirm backend can resolve the postgres service name
-      - name: Check PostgreSQL DNS
-        run: |
-          docker compose -f docker-compose-stage.yml exec -T backend \
-            python -c "import socket; print(socket.gethostbyname('postgres'))"
-
-
-      # 10. Django configuration check
+      # 8. Django configuration check
       - name: Run Django checks
         run: |
           docker compose -f docker-compose-stage.yml exec -T backend \
             python manage.py check
 
+
+      # 9. Show container state for debugging
+      - name: Show running containers
+        run: |
+          docker compose -f docker-compose-stage.yml ps
+
+
+      # 10. Confirm backend can resolve the postgres service name
+      - name: Check PostgreSQL DNS
+        run: |
+          docker compose -f docker-compose-stage.yml exec -T backend \
+            python -c "import socket; print(socket.gethostbyname('postgres'))"     
 
       # 11. Fail if you forgot to commit a migration
       - name: Check migrations

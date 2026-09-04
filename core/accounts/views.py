@@ -20,7 +20,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
-from accounts.forms import UserEditForm, ProfileEditForm
+from accounts.forms import UserEditForm, ProfileEditForm, PasswordChangeCustomForm
 from .models import Profile
 
 # Create your views here.
@@ -121,7 +121,10 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         context["user_form"] = UserEditForm(instance=self.request.user)
+
         context["profile_form"] = ProfileEditForm(instance=self.get_profile())
+
+        context["password_form"] = PasswordChangeCustomForm()
 
         return context
 
@@ -140,29 +143,57 @@ class ProfileView(LoginRequiredMixin, TemplateView):
             instance=profile,
         )
 
-        if user_form.is_valid() and profile_form.is_valid():
-            user = user_form.save(commit=False)
+        password_form = PasswordChangeCustomForm(request.POST)
 
-            password = user_form.cleaned_data.get("password")
+        if "change_password" in request.POST:
 
-            if password:
-                user.set_password(password)
+            if password_form.is_valid():
 
-            user.save()
-            profile_form.save()
+                current_password = password_form.cleaned_data["current_password"]
 
-            if password:
-                update_session_auth_hash(request, user)
+                new_password = password_form.cleaned_data["new_password1"]
 
-            messages.success(
-                request,
-                "Profile edited successfully.",
-            )
+                if not user.check_password(current_password):
 
-            return redirect("accounts:profile")
+                    password_form.add_error(
+                        "current_password",
+                        "Your current password is incorrect.",
+                    )
 
-        context = self.get_context_data()
-        context["user_form"] = user_form
-        context["profile_form"] = profile_form
+                else:
+                    user.set_password(new_password)
+                    user.save()
+
+                    update_session_auth_hash(
+                        request,
+                        user,
+                    )
+
+                    messages.success(
+                        request,
+                        "Your password was changed successfully.",
+                    )
+
+                    return redirect("accounts:profile")
+
+        elif "save_profile" in request.POST:
+
+            if user_form.is_valid() and profile_form.is_valid():
+
+                user_form.save()
+                profile_form.save()
+
+                messages.success(
+                    request,
+                    "Profile edited successfully.",
+                )
+
+                return redirect("accounts:profile")
+
+        context = {
+            "user_form": user_form,
+            "profile_form": profile_form,
+            "password_form": password_form,
+        }
 
         return self.render_to_response(context)

@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from accounts.models import Profile
+from django.contrib.auth.password_validation import validate_password
 
 # get user model object
 User = get_user_model()
@@ -45,11 +46,6 @@ class LoginForm(AuthenticationForm):
 
 
 class UserEditForm(forms.ModelForm):
-    password = forms.CharField(
-        required=False,
-        widget=forms.PasswordInput,
-        help_text="Leave blank if you do not want to change your password.",
-    )
 
     class Meta:
         model = User
@@ -66,3 +62,41 @@ class ProfileEditForm(forms.ModelForm):
             "last_name",
             "image",
         ]
+
+
+class PasswordChangeCustomForm(forms.Form):
+    current_password = forms.CharField(
+        label="Current password",
+        widget=forms.PasswordInput,
+    )
+
+    new_password1 = forms.CharField(
+        label="New password",
+        widget=forms.PasswordInput,
+    )
+
+    new_password2 = forms.CharField(
+        label="Confirm new password",
+        widget=forms.PasswordInput,
+    )
+
+    def clean_new_password1(self):
+        password = self.cleaned_data["new_password1"]
+
+        validate_password(password)
+
+        return password
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        password1 = cleaned_data.get("new_password1")
+        password2 = cleaned_data.get("new_password2")
+
+        if password1 and password2 and password1 != password2:
+            self.add_error(
+                "new_password2",
+                "The two passwords do not match.",
+            )
+
+        return cleaned_data

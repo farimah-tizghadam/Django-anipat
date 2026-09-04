@@ -1665,8 +1665,10 @@ h3 {
     position: absolute;
     right: 0;
     bottom: 0;
-    border-top: 15px solid #ffffff;
-    border-left: 15px solid #ffffff;
+    border-top: 15px solid
+ #ffffff;
+    border-left: 15px solid
+ #ffffff;
     top: auto;
     width: 50%;
     height: 60%;
@@ -6547,6 +6549,69 @@ h6 {
     margin-right: 10px;
   }
 }
+
+
+.profile-field {
+    margin-bottom: 28px;
+}
+
+.profile-field label {
+    display: block;
+    color: #555;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.profile-field .form-control {
+    height: 50px;
+    border: 1px solid #e1e1e1;
+    border-radius: 5px;
+    padding: 0 15px;
+    font-size: 14px;
+}
+
+.profile-btn {
+    display: inline-block;
+    margin-top: 10px;
+
+    border: 1px solid #ff3500;
+    background: #ff3500;
+    color: #fff;
+
+    border-radius: 30px;
+    padding: 12px 32px;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.profile-btn:hover {
+    background: #fff;
+    color: #ff3500;
+}
+
+.profile-divider {
+    height: 1px;
+    background: #eeeeee;
+    margin: 40px 0;
+}
+
+.profile-section {
+    padding: 35px 40px;
+}
+
+.profile-section h4 {
+    margin-bottom: 8px;
+}
+
+.section-description {
+    margin-bottom: 30px;
+}
+
 
 /* line 166, ../../Arafath/CL/january 2020/240. Animal/HTML/scss/_blog_part.scss */
 .blog_part .single-home-blog .card ul li span {

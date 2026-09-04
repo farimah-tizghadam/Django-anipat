@@ -1,66 +1,261 @@
-{% extends 'base.html'%}
+{% extends 'base.html' %}
 
 {% block content %}
 {% load static %}
-<!-- start banner Area -->
-<section class="relative about-banner">
-	<div class="overlay overlay-bg"></div>
-	<div class="container">
-		<div class="row d-flex align-items-center justify-content-center">
-			<div class="about-content col-lg-12">
-				<h1 class="text-white">
-					Profile
-				</h1>
-				<p class="text-white link-nav"><a href="{% url 'website:index' %}">Home </a> <span
-						class="lnr lnr-arrow-right"></span>
-					<a href="{% url 'accounts:profile' %}">Profile</a>
-				</p>
-			</div>
-		</div>
-	</div>
-</section>
-<!-- End banner Area -->
 
 <section class="contact-page-area section-gap">
-	<div class="container">
-		<div class="">
-			<div class="col-lg-8">
-				<form class="form-area" action="{% url 'accounts:profile' %}" method="post">
-					<div class="">
-						{% csrf_token %}
-						<div class="col-lg-6 form-group">
-							<label for="{{ profile_form.first_name.id_for_label }}">first_name:</label>
-							<input name="first_name" placeholder="Enter your name" onfocus="this.placeholder = ''"
-								class="common-input mb-20 form-control" value="{{profile_form.first_name.value|default_if_none:''}}"
-								onblur="this.placeholder = 'Enter your name'" type="text" >
+    <div class="container">
 
-							<label>last_name:</label>
-							<input name="last_name" placeholder="Enter last name" class="common-input mb-20 form-control"
-								onfocus="this.placeholder = ''" onblur="this.placeholder = 'Enter email address'"
-								type="text" value="{{profile_form.instance.last_name}}">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
 
-							<label>email:</label>
-							<input name="email" placeholder="Enter email" onfocus="this.placeholder = ''"
-								class="common-input mb-20 form-control" value="{{request.user.email}}"
-								pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{1,63}$"
-								onblur="this.placeholder = 'Enter email'" type="email">
+                <!-- PROFILE CARD -->
+                <div class="anipat-profile-card">
 
-								
-							<label>password:</label>
-							<input name="password" placeholder="Enter password" onfocus="this.placeholder = ''"
-								class="common-input mb-20 form-control"  type="password"
-								onblur="this.placeholder = 'Enter password'" class="common-input mb-20 form-control">
-						</div>
-						<div class="col-lg-12">
-							<div class="alert-msg"></div>
-							<button type="submit" class="btn btn-primary">
-    							Save Changes
-							</button>
-						</div>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
+                    <!-- Profile heading -->
+                    <div class="profile-heading text-center">
+
+                        {% if profile_form.instance.image %}
+                            <img
+                                src="{{ profile_form.instance.image.url }}"
+                                class="profile-avatar"
+                                alt="Profile"
+                            >
+                        {% else %}
+                            <img
+                                src="{% static 'img/default-profile.png' %}"
+                                class="profile-avatar"
+                                alt="Profile"
+                            >
+                        {% endif %}
+
+                        <h3>
+                            {% if profile_form.instance.first_name %}
+                                {{ profile_form.instance.first_name }}
+                                {{ profile_form.instance.last_name }}
+                            {% else %}
+                                My Profile
+                            {% endif %}
+                        </h3>
+
+                        <p>{{ request.user.email }}</p>
+
+                    </div>
+
+
+                    <!-- PROFILE INFORMATION -->
+                    <div class="profile-section">
+
+                        <h4>Profile Information</h4>
+                        <p class="section-description">
+                            Update your personal information and profile photo.
+                        </p>
+
+                        <form
+                            action="{% url 'accounts:profile' %}"
+                            method="post"
+                            enctype="multipart/form-data"
+                        >
+                            {% csrf_token %}
+
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    <div class="profile-field">
+                                        <label>First Name</label>
+
+                                        <input
+                                            name="first_name"
+                                            type="text"
+                                            class="form-control"
+                                            placeholder="First name"
+                                            value="{{ profile_form.first_name.value|default_if_none:'' }}"
+                                        >
+
+                                        {% for error in profile_form.first_name.errors %}
+                                            <small class="text-danger">
+                                                {{ error }}
+                                            </small>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-6">
+                                    <div class="profile-field">
+                                        <label>Last Name</label>
+
+                                        <input
+                                            name="last_name"
+                                            type="text"
+                                            class="form-control"
+                                            placeholder="Last name"
+                                            value="{{ profile_form.last_name.value|default_if_none:'' }}"
+                                        >
+
+                                        {% for error in profile_form.last_name.errors %}
+                                            <small class="text-danger">
+                                                {{ error }}
+                                            </small>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+
+                                <div class="col-12">
+                                    <div class="profile-field">
+                                        <label>Email Address</label>
+
+                                        <input
+                                            name="email"
+                                            type="email"
+                                            class="form-control"
+                                            placeholder="Email address"
+                                            value="{{ user_form.email.value|default:request.user.email }}"
+                                        >
+
+                                        {% for error in user_form.email.errors %}
+                                            <small class="text-danger">
+                                                {{ error }}
+                                            </small>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+
+                                <div class="col-12">
+                                    <div class="profile-field">
+                                        <label>Profile Photo</label>
+
+                                        <input
+                                            name="image"
+                                            type="file"
+                                            class="form-control profile-file"
+                                        >
+
+                                        {% for error in profile_form.image.errors %}
+                                            <small class="text-danger">
+                                                {{ error }}
+                                            </small>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                            <button
+                                type="submit"
+                                name="save_profile"
+                                class="profile-btn"
+                            >
+                                Save Changes
+                            </button>
+
+                        </form>
+
+                    </div>
+
+
+                    <div class="profile-divider"></div>
+
+
+                    <!-- PASSWORD -->
+                    <div class="profile-section">
+
+                        <h4>Change Password</h4>
+
+                        <p class="section-description">
+                            Use your current password to set a new password.
+                        </p>
+
+                        <form
+                            action="{% url 'accounts:profile' %}"
+                            method="post"
+                        >
+                            {% csrf_token %}
+
+                            <div class="profile-field">
+                                <label>Current Password</label>
+
+                                <input
+                                    name="current_password"
+                                    type="password"
+                                    class="form-control"
+                                    placeholder="Enter your current password"
+                                >
+
+                                {% for error in password_form.current_password.errors %}
+                                    <small class="text-danger">
+                                        {{ error }}
+                                    </small>
+                                {% endfor %}
+                            </div>
+
+
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    <div class="profile-field">
+                                        <label>New Password</label>
+
+                                        <input
+                                            name="new_password1"
+                                            type="password"
+                                            class="form-control"
+                                            placeholder="New password"
+                                        >
+
+                                        {% for error in password_form.new_password1.errors %}
+                                            <small class="text-danger">
+                                                {{ error }}
+                                            </small>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-6">
+                                    <div class="profile-field">
+                                        <label>Confirm Password</label>
+
+                                        <input
+                                            name="new_password2"
+                                            type="password"
+                                            class="form-control"
+                                            placeholder="Confirm password"
+                                        >
+
+                                        {% for error in password_form.new_password2.errors %}
+                                            <small class="text-danger">
+                                                {{ error }}
+                                            </small>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                            <button
+                                type="submit"
+                                name="change_password"
+                                class="profile-btn profile-btn-outline"
+                            >
+                                Change Password
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
 </section>
+
+
 {% endblock %}

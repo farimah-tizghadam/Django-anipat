@@ -55,7 +55,7 @@ services:
       - 8000
     environment:
       - SECRET_KEY=${DJANGO_SECRET_KEY}
-      - DEBUG=${DEBUG}
+      - DEBUG=True
       - DB_HOST=${DB_HOST}
       - DB_NAME=${DB_NAME}         
       - DB_USER=${DB_USER}              

@@ -44,6 +44,31 @@ class LoginForm(AuthenticationForm):
         ),
     )
 
+    def clean(self):
+        print("CUSTOM LOGIN CLEAN IS RUNNING")
+        
+        email = self.cleaned_data.get("username")
+        password = self.cleaned_data.get("password")
+
+        if email and password:
+            try:
+                user = User.objects.get(email__iexact=email)
+            except User.DoesNotExist:
+                user = None
+
+            if user is not None and not user.is_active:
+                if user.check_password(password):
+                    raise forms.ValidationError(
+                        _(
+                            "Your account is not activated yet. "
+                            "Please check your email and click the activation link."
+                        ),
+                        code="inactive",
+                    )
+
+        return super().clean()
+
+
 
 class UserEditForm(forms.ModelForm):
 

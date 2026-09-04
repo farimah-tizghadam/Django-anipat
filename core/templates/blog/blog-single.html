@@ -155,16 +155,19 @@
                               </div>
                            </div>
                         {% if request.user.is_authenticated %}
-                           <div class="col-sm-6">
-                              <div class="form-group">
-                                 <input class="form-control" name="name" id="name" value="{{request.user.first_name}}" type="text" placeholder="Name">
-                              </div>
-                           </div>
-                           <div class="col-sm-6">
-                              <div class="form-group">
-                                 <input class="form-control" name="email" id="email" value="{{request.user.email}}" type="email" placeholder="Email">
-                              </div>
-                           </div>
+                           {% with profile=request.user.profile_set.first %}
+                              <input
+                                 type="hidden"
+                                 name="name"
+                                 value="{{ profile.first_name|default:'' }}"
+                              >
+
+                              <input
+                                 type="hidden"
+                                 name="email"
+                                 value="{{ request.user.email }}"
+                              >
+                           {% endwith %}
                         {% endif %}
                            <div class="col-12">
                               <div class="form-group">

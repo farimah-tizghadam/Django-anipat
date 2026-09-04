@@ -46,7 +46,7 @@ class LoginForm(AuthenticationForm):
 
     def clean(self):
         print("CUSTOM LOGIN CLEAN IS RUNNING")
-        
+
         email = self.cleaned_data.get("username")
         password = self.cleaned_data.get("password")
 
@@ -67,7 +67,6 @@ class LoginForm(AuthenticationForm):
                     )
 
         return super().clean()
-
 
 
 class UserEditForm(forms.ModelForm):

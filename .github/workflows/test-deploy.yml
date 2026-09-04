@@ -68,7 +68,7 @@ jobs:
       # 7. Run Django migrations
       - name: Run migrations
         run: |
-          docker compose -f docker-compose-stage.yml run --rm migrate
+          docker compose -f docker-compose-stage.yml exec -T backend python manage.py migrate --noinput
 
       # 8. Django configuration check
       - name: Run Django checks

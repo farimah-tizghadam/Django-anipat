@@ -159,7 +159,7 @@
                               <input
                                  type="hidden"
                                  name="name"
-                                 value="{{ profile.first_name|default:'' }}"
+                                 value="{% if profile and profile.first_name %}{{ profile.first_name }}{% else %}{{ request.user.email }}{% endif %}"
                               >
 
                               <input

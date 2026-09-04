@@ -115,7 +115,11 @@
                      <div class="single-comment justify-content-between d-flex">
                         <div class="user justify-content-between d-flex">
                            <div class="thumb">
-                              <img src="{{post.author.image.url}}" alt="">
+                              {% with profile=comment.author.profile_set.first %}
+                                    {% if profile and profile.image %}
+                                          <img src="{{ profile.image.url }}" alt="Profile">
+                                    {% endif %}
+                                 {% endwith %}                           
                            </div>
                            <div class="desc">
                               <p class="comment">{{comment.message}}</p>

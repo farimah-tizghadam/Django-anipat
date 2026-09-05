@@ -143,20 +143,13 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         user = request.user
         profile = self.get_profile()
 
-        user_form = UserEditForm(
-            request.POST,
-            instance=user,
-        )
-
-        profile_form = ProfileEditForm(
-            request.POST,
-            request.FILES,
-            instance=profile,
-        )
-
-        password_form = PasswordChangeCustomForm(request.POST)
+        user_form = UserEditForm(instance=user)
+        profile_form = ProfileEditForm(instance=profile)
+        password_form = PasswordChangeCustomForm()
 
         if "change_password" in request.POST:
+
+            password_form = PasswordChangeCustomForm(request.POST)
 
             if password_form.is_valid():
 
@@ -189,6 +182,21 @@ class ProfileView(LoginRequiredMixin, TemplateView):
 
         elif "save_profile" in request.POST:
 
+            user_form = UserEditForm(
+                request.POST,
+                instance=user,
+            )
+
+            profile_form = ProfileEditForm(
+                request.POST,
+                request.FILES,
+                instance=profile,
+            )
+
+            # IMPORTANT:
+            # Don't bind the password form here
+            password_form = PasswordChangeCustomForm()
+
             if user_form.is_valid() and profile_form.is_valid():
 
                 user_form.save()
@@ -200,6 +208,13 @@ class ProfileView(LoginRequiredMixin, TemplateView):
                 )
 
                 return redirect("accounts:profile")
+
+        else:
+            user_form = UserEditForm(instance=user)
+
+            profile_form = ProfileEditForm(instance=profile)
+
+            password_form = PasswordChangeCustomForm()
 
         context = {
             "user_form": user_form,

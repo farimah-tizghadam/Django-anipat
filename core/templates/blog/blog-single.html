@@ -18,8 +18,13 @@
                   <div class="blog_details">
                      <h2>{{post.title}}</h2>
                      <ul class="blog-info-link mt-3 mb-4">
-                        <li><a href="#"><i class="fa fa-user"></i> Travel, Lifestyle</a></li>
-                        <li><a href="#"><i class="fa fa-comments"></i> {{comments|length}} Comments</a></li>
+                       {% for tag in post.tags.all %}    
+                              <a href="#">
+                                 <i class="fa fa-tag"></i>{{tag}}
+                              </a>{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                        </br>
+                        <li><a href="{% url 'blog:post-detail' pk=post.pk %}#comments"><i class="fa fa-comments"></i> {{comments|length}} Comments</a></li>
                         <li><a href="#"><i class="fa fa-eye"></i>{{post.views}} views</a></li>
                      </ul>
                      <p class="excert">{{post.content}}</p>
@@ -108,7 +113,7 @@
                      </div>
                   </div>
                </div>
-               <div class="comments-area">
+               <div class="comments-area" id="comments">
                   <h4>{{comments|length}} Comments</h4>
                {% for comment in comments %}
                   <div class="comment-list">

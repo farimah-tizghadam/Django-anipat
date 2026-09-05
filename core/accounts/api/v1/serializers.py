@@ -158,7 +158,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "email",
-            "first_name",
             "is_verified",
         )
 

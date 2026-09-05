@@ -21,8 +21,8 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from accounts.forms import (
-    UserEditForm, 
-    ProfileEditForm, 
+    UserEditForm,
+    ProfileEditForm,
     PasswordChangeCustomForm,
     ResendActivationForm,
 )
@@ -224,9 +224,7 @@ def resend_activation(request):
 
             if user is not None and not user.is_active:
 
-                uid = urlsafe_base64_encode(
-                    force_bytes(user.pk)
-                )
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
 
                 token = default_token_generator.make_token(user)
 
@@ -238,9 +236,7 @@ def resend_activation(request):
                     },
                 )
 
-                activation_url = request.build_absolute_uri(
-                    activation_path
-                )
+                activation_url = request.build_absolute_uri(activation_path)
 
                 send_activation_email.delay(
                     user.email,

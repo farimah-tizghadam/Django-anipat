@@ -8,7 +8,7 @@ from .tasks import send_activation_email
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils.decorators import method_decorator
 from django.contrib.auth import logout
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
@@ -20,7 +20,12 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
-from accounts.forms import UserEditForm, ProfileEditForm, PasswordChangeCustomForm
+from accounts.forms import (
+    UserEditForm, 
+    ProfileEditForm, 
+    PasswordChangeCustomForm,
+    ResendActivationForm,
+)
 from .models import Profile
 
 # Create your views here.
@@ -104,11 +109,17 @@ def activate_account(request, uidb64, token):
             request, "Your account has been activated. You can now log in."
         )
 
+        messages.error(request, "The activation link is invalid or has expired.")
+
         return redirect("accounts:login")
 
-    messages.error(request, "The activation link is invalid or has expired.")
+    messages.error(
+        request,
+        "This activation link is invalid or has expired. "
+        "Please request a new activation email.",
+    )
 
-    return redirect("accounts:login")
+    return redirect("accounts:resend-activation")
 
 
 class ProfileView(LoginRequiredMixin, TemplateView):
@@ -197,3 +208,60 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         }
 
         return self.render_to_response(context)
+
+
+def resend_activation(request):
+    if request.method == "POST":
+        form = ResendActivationForm(request.POST)
+
+        if form.is_valid():
+            email = form.cleaned_data["email"]
+
+            try:
+                user = User.objects.get(email__iexact=email)
+            except User.DoesNotExist:
+                user = None
+
+            if user is not None and not user.is_active:
+
+                uid = urlsafe_base64_encode(
+                    force_bytes(user.pk)
+                )
+
+                token = default_token_generator.make_token(user)
+
+                activation_path = reverse(
+                    "accounts:activate",
+                    kwargs={
+                        "uidb64": uid,
+                        "token": token,
+                    },
+                )
+
+                activation_url = request.build_absolute_uri(
+                    activation_path
+                )
+
+                send_activation_email.delay(
+                    user.email,
+                    activation_url,
+                )
+
+            messages.success(
+                request,
+                "If an inactive account exists with that email address, "
+                "a new activation link has been sent.",
+            )
+
+            return redirect("accounts:login")
+
+    else:
+        form = ResendActivationForm()
+
+    return render(
+        request,
+        "accounts/resend_activation.html",
+        {
+            "form": form,
+        },
+    )

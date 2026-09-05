@@ -64,4 +64,9 @@ urlpatterns = [
         ),
         name="password_reset_complete",
     ),
+    path(
+        "resend-activation/",
+        views.resend_activation,
+        name="resend-activation",
+    ),
 ]

@@ -124,3 +124,15 @@ class PasswordChangeCustomForm(forms.Form):
             )
 
         return cleaned_data
+
+
+class ResendActivationForm(forms.Form):
+    email = forms.EmailField(
+        label="Email",
+        widget=forms.EmailInput(
+            attrs={
+                "placeholder": "name@example.com",
+                "class": "form-control",
+            }
+        ),
+    )

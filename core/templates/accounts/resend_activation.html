@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="contact-page-area section-gap">
+    <div class="container">
+
+        <div class="row justify-content-center">
+            <div class="col-lg-5">
+
+                <div class="login-card">
+
+                    <h2>Resend Activation Email</h2>
+
+                    <p>
+                        Enter the email address you registered with,
+                        and we'll send you a new activation link.
+                    </p>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="form-group">
+                            <label>Email address</label>
+
+                            {{ form.email }}
+
+                            {% for error in form.email.errors %}
+                                <p class="text-danger">
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="boxed-btn3"
+                        >
+                            Send New Activation Link
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

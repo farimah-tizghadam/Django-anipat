@@ -40,6 +40,8 @@ services:
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
+
+      - SITE_URL=${SITE_URL}
     depends_on:
      - postgres 
 
@@ -92,6 +94,8 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_HOST=${DB_HOST}
 
+      - SITE_URL=${SITE_URL}
+
   celery_worker:
     build: .
     volumes:
@@ -113,6 +117,8 @@ services:
       EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
       EMAIL_USE_TLS: ${EMAIL_USE_TLS}
       DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL}
+
+      SITE_URL: ${SITE_URL}
     depends_on:
       - redis
       - backend

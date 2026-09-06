@@ -5,7 +5,7 @@ Activate your account
 {% block html %}
 <h2>Activate your account</h2>
 
-<p>Hello {{ name }},</p>
+<p>Hello {{ email }},</p>
 
 <p>Thank you for creating an account.</p>
 

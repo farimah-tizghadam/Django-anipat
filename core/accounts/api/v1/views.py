@@ -48,7 +48,7 @@ class RegistrationAPIView(generics.CreateAPIView):
             kwargs={"token": token},
         )
 
-        activation_url = self.request.build_absolute_uri(activation_path)
+        activation_url = f"{settings.SITE_URL.rstrip('/')}{activation_path}"
         email_obj = EmailMessage(
             "email/activation.tpl",
             {
@@ -266,7 +266,8 @@ class ActivationResendApiView(generics.GenericAPIView):
             kwargs={"token": token},
         )
 
-        activation_url = request.build_absolute_uri(activation_path)
+        activation_url = f"{settings.SITE_URL.rstrip('/')}{activation_path}"        
+        print("ACTIVATION URL:", activation_url)
 
         email_obj = EmailMessage(
             "email/activation.tpl",

@@ -242,6 +242,11 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost",
 ]
 
+SITE_URL = config(
+    "SITE_URL",
+    default="http://127.0.0.1",
+)
+
 CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SECURE = False
 

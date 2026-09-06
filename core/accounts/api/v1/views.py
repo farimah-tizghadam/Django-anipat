@@ -58,7 +58,7 @@ class RegistrationAPIView(generics.CreateAPIView):
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[email],
         )
-        EmailThread(email_obj).start()
+        email_obj.send(fail_silently=False)
         return Response(data, status=status.HTTP_201_CREATED)
 
     def get_token_for_user(self, user):

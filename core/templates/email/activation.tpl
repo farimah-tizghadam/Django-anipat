@@ -1,13 +1,27 @@
+{% extends "mail_templated/base.tpl" %}
+
 {% block subject %}
-Activate your account
+Activate your Anipat account
+{% endblock %}
+
+{% block body %}
+Hello {{ email }},
+
+Thank you for creating an Anipat account.
+
+Activate your account here:
+
+{{ activation_url }}
+
+If you did not create this account, ignore this email.
 {% endblock %}
 
 {% block html %}
-<h2>Activate your account</h2>
+<h2>Activate your Anipat account</h2>
 
 <p>Hello {{ email }},</p>
 
-<p>Thank you for creating an account.</p>
+<p>Thank you for creating an Anipat account.</p>
 
 <p>
     <a href="{{ activation_url }}">

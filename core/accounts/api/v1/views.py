@@ -85,8 +85,25 @@ class CustomDiscardAuthToken(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        request.user.auth_token.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        token = Token.objects.filter(
+            user=request.user
+        ).first()
+
+        if token is None:
+            return Response(
+                {
+                    "detail": (
+                        "No authentication token exists for this user."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        token.delete()
+
+        return Response(
+            status=status.HTTP_204_NO_CONTENT
+        )
 
 
 class UserVerificationAPIView(APIView):

@@ -5,7 +5,7 @@ from django.core import exceptions
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
+from ...models import Profile
 
 class RegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
@@ -153,16 +153,17 @@ class ActivationResendSerializer(serializers.Serializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = (
-            "id",
-            "email",
-            "is_verified",
-        )
+    email = serializers.EmailField(
+        source="user.email",
+        read_only=True,
+    )
 
-        read_only_fields = (
+    class Meta:
+        model = Profile
+        fields = [
             "id",
             "email",
-            "is_verified",
-        )
+            "first_name",
+            "last_name",
+            "image",
+        ]

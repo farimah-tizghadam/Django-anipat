@@ -111,10 +111,9 @@ def activate_account(request, uidb64, token):
         user.save(update_fields=["is_active", "is_verified"])
 
         messages.success(
-            request, "Your account has been activated. You can now log in."
+            request,
+            "Your account has been activated. You can now log in.",
         )
-
-        messages.error(request, "The activation link is invalid or has expired.")
 
         return redirect("accounts:login")
 

@@ -49,14 +49,15 @@ class CustomLoginView(LoginView):
 
 
 class RegisterPageView(CreateView):
-    """
-    a class for register user and generates uid and token, pass them to
-    the existed task then sends activation/verification email
-    """
-
     template_name = "accounts/register.html"
     form_class = CustomUserCreationForm
     success_url = reverse_lazy("accounts:login")
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect("blog:post-list")
+
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         user = form.save(commit=False)
@@ -77,7 +78,11 @@ class RegisterPageView(CreateView):
             user.email,
             activation_url,
         )
-        messages.success(self.request, "activation/verification email has been sent.")
+
+        messages.success(
+            self.request,
+            "activation/verification email has been sent.",
+        )
 
         self.object = user
         return redirect(self.success_url)

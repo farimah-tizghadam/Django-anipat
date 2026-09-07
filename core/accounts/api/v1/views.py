@@ -128,13 +128,15 @@ class ChangePasswordApiView(generics.GenericAPIView):
 
         if serializer.is_valid():
             # Check old password
-            if not self.object.check_password(serializer.data.get("old_password")):
+            if not self.object.check_password(
+                serializer.validated_data.get("old_password")
+            ):
                 return Response(
                     {"old_password": ["Wrong password."]},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             # set_password also hashes the password that the user will get
-            self.object.set_password(serializer.data.get("new_password"))
+            self.object.set_password(serializer.validated_data.get("new_password"))
             self.object.save()
             response = {
                 "status": "success",
@@ -153,15 +155,29 @@ class ResetPasswordApiView(generics.GenericAPIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
+
         user_obj = serializer.validated_data["user"]
         token = self.get_token_for_user(user_obj)
+
+        reset_path = reverse(
+            "accounts:accounts-api-v1:password_reset_confirm",
+            kwargs={"token": token},
+        )
+
+        reset_url = f"{settings.SITE_URL.rstrip('/')}{reset_path}"
+
         email_obj = EmailMessage(
             "email/reset.tpl",
-            {"token": token},
-            "farimahtizghadam@gmail.com",
+            {
+                "email": user_obj.email,
+                "reset_url": reset_url,
+            },
+            from_email=settings.DEFAULT_FROM_EMAIL,
             to=[user_obj.email],
         )
+
         EmailThread(email_obj).start()
+
         return Response(
             {"detail": "check your email to reset your password"},
             status=status.HTTP_200_OK,
@@ -186,26 +202,49 @@ class ConfirmResetPasswordApiView(generics.GenericAPIView):
 
     def put(self, request, token):
         try:
-            token = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-            user_id = token.get("user_id")
+            decoded_token = jwt.decode(
+                token,
+                settings.SECRET_KEY,
+                algorithms=["HS256"],
+            )
+            user_id = decoded_token.get("user_id")
+
+            if not user_id:
+                return Response(
+                    {"detail": "Invalid token."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
         except ExpiredSignatureError:
             return Response(
-                {"details": "token has been expired"},
+                {"detail": "Token has expired."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        except InvalidSignatureError:
+
+        except jwt.InvalidTokenError:
             return Response(
-                {"detail": "token is invalid"},
+                {"detail": "Token is invalid."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user_obj = User.objects.get(pk=user_id)
-        user_obj.set_password(serializer.data.get("new_password"))
+
+        try:
+            user_obj = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "User does not exist."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        user_obj.set_password(serializer.validated_data["new_password"])
         user_obj.save()
 
-        return Response({"detail": "your password has been reset successfully"})
+        return Response(
+            {"detail": "Your password has been reset successfully."},
+            status=status.HTTP_200_OK,
+        )
 
 
 class ActivationApiView(APIView):
@@ -267,7 +306,6 @@ class ActivationResendApiView(generics.GenericAPIView):
         )
 
         activation_url = f"{settings.SITE_URL.rstrip('/')}{activation_path}"
-        print("ACTIVATION URL:", activation_url)
 
         email_obj = EmailMessage(
             "email/activation.tpl",

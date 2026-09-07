@@ -114,11 +114,14 @@ class ResetPasswordSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         email = attrs.get("email")
-        user = User.objects.get(email=email)
-        if not user:
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
             raise serializers.ValidationError(
-                {"error": _("User with this email does not exist.")}
+                {"email": "User with this email does not exist."}
             )
+
         attrs["user"] = user
         return super().validate(attrs)
 
@@ -135,7 +138,7 @@ class ResetConfirmSerializer(serializers.Serializer):
             validate_password(attrs.get("new_password"))
         except exceptions.ValidationError as e:
             raise serializers.ValidationError({"new_password": list(e.messages)})
-        return super().validate(attrs)
+        return attrs
 
 
 class ActivationResendSerializer(serializers.Serializer):

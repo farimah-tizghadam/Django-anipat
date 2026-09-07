@@ -240,6 +240,7 @@ CACHES = {
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1",
     "http://localhost",
+    "http://94.101.184.192",
 ]
 
 SITE_URL = config(
